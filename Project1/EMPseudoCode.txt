@@ -1,0 +1,20 @@
+initialize t(f|e) uniformly
+do until convergence
+    set count(f|e) to 0 for all e,f
+	set total(e) to 0 for all e
+	for all sentence pairs (e_s,f_s)
+	    set total_s(f) = 0 for all f
+		for all words f in f_s
+		   for all words e in e_s
+		      total_s(f) += t(f|e)
+		for all words f in f_s
+		   for all words e in e_s
+		      count(f|e) += t(f|e) / total_s(f)
+			  total(e) += t(f|e) / total_s(f)
+    for all e
+	    for all f
+		   t(f|e) = count(f|e) /total(e)
+		   
+		   
+		   
+{"today" : {"green": 0, "red" : 0}}
