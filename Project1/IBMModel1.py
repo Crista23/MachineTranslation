@@ -26,7 +26,6 @@ def ExpectationMaximization(sentencePairs):
     uniformProb = 1.0 / len(foreignVocabulary)
     for foreignWord in foreignVocabulary:
         for englishWord in englishVocabulary:
-            translationDictionary[foreignWord][englishWord] = uniformProb
 
 #
 #     # Step 1 - Assume uniform initial probabilities t(e|f)
@@ -34,6 +33,8 @@ def ExpectationMaximization(sentencePairs):
 #     for foreignWord in foreignVocabulary:
 #         for englishWord in englishVocabulary:
 #             translationProbs[(foreignWord, englishWord)] = uniformProb
+
+            translationProbs[(foreignWord, englishWord)] = uniformProb
 
     # compute the list of all possible alignments
     alignments = []
@@ -126,8 +127,13 @@ def loadSentences(encorpus, nlcorpus):
         pairs.append(langpair)
     return pairs
 
+<<<<<<< HEAD
 def main():
     """
+=======
+def main(): 
+    
+>>>>>>> b1939ee2f73dde2450f5f8c5176090fae523601b
     pairedSentences = [('mi casa verde'.split(), 'my green house'.split()),
                         ('casa verde'.split(), 'green house'.split()),
                         ('la casa'.split(), 'the house'.split())]
@@ -137,7 +143,12 @@ def main():
     ForeignCorpus = "corpus.nl"
     # pairedSentences looks like: [(['mi', 'casa', 'verde'], ['my', 'green', 'house']), (['casa', 'verde'], ['green', 'house']), (['la', 'casa'], ['the', 'house'])]
     pairedSentences = loadSentences(ForeignCorpus, EnglishCorpus)
+<<<<<<< HEAD
 
+=======
+    """
+    
+>>>>>>> b1939ee2f73dde2450f5f8c5176090fae523601b
     print ExpectationMaximization(pairedSentences)
 
 
