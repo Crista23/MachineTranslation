@@ -16,7 +16,7 @@ def ibm1(sentencePairs):
     for e in englishVocabulary:
         t[e] = defaultdict(lambda: 1.0/len(foreignVocabulary))
 
-    threshold = 0.01
+    threshold = 0.1535
     maxDiff = 1
 
     while maxDiff>threshold:
@@ -56,12 +56,32 @@ def ibm1(sentencePairs):
                   print 'zero two'
                   del t[e][fs[i]]
 
-       printBest(t)
+   #    printBest(t)
     return t
 
 def printBest(t):
     print sorted(t['the'].items(), key = lambda x: x[1],reverse=True)[0:10]
     print sorted(t['is'].items(), key = lambda x: x[1],reverse=True)[0:10]
+
+
+def viterbiAlignment(sentencepairs, t):
+    for es, fs in sentencepairs:
+        alignment = [0]*len(fs)
+        for j in range(len(fs)):
+            maxVal = 0
+            choice = 0
+            for aj in range(len(es)):
+                val = t[es[aj]][fs[j]]
+                  #*a(aj|j,m,l), which is uniform in model 1
+                if val> maxVal:
+                   maxVal = val
+                   choice = aj
+            alignment[j] = choice
+        print es,fs, alignment
+
+
+
+
 
 
 
@@ -85,6 +105,7 @@ def main():
     pairedSentences = loadSentences(englishCorpus,foreignCorpus)
 
     t = ibm1(pairedSentences)
+    viterbiAlignment(pairedSentences, t)
 
 
 if __name__ == '__main__':
