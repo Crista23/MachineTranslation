@@ -3,7 +3,13 @@ from collections import defaultdict
 import copy, itertools, operator, re
 
 
-def ExpectationMaximization(sentencePairs):
+#def eStep():
+
+
+#def mStep():
+
+
+def ExpectationMaximization(sentencePairs, maxM, maxL):
     """ Zip function
     -if I have a list a = [(["a", "b", "c"], ["d","e","f"]), (["g","h","i"], ["j","k","l"])]
     calling s,t = zip(*a)
@@ -22,6 +28,7 @@ def ExpectationMaximization(sentencePairs):
     translationProbs = {}
 
     # Step 1 - Assume uniform initial probabilities t(e|f)
+    print 'initializing vocabulary'
     translationDictionary = defaultdict(dict)
     uniformProb = 1.0 / len(foreignVocabulary)
     for foreignWord in foreignVocabulary:
@@ -37,25 +44,21 @@ def ExpectationMaximization(sentencePairs):
             translationProbs[(foreignWord, englishWord)] = uniformProb
 
     # compute the list of all possible alignments
-    alignments = []
-    for foreign, english in sentencePairs:
-        """
-        if we have a list a = ['a','b','c'],
-        itertools.permutations(a) returns all possible combinations: ('a', 'b', 'c'), ('a', 'c', 'b'), ('b', 'a', 'c'), ('b', 'c', 'a'), ('c', 'a', 'b'), ('c', 'b', 'a')
-        """
-        englishPermutations = itertools.permutations(english)
-        for englishPermutation in englishPermutations:
-            """
-            x = [1, 2, 3]
-            y = [4, 5, 6]
-            zipped = zip(x, y) => [(1, 4), (2, 5), (3, 6)]
-            """
-            alignment = zip(foreign, englishPermutation)
-            alignments.append(alignment)
-    alignments = [alignments]
+    print 'computing the list of possible alignments'
+
+
+    for m in range(maxM):
+        for l in range(maxL):
+            alignments[m,l] =
+            
+
 
     # Repeat until convergence
-    while translationProbsPreviousStep != translationProbs:
+    numberOfTimes = 0
+    while numberOfTimes<5:
+        numberOfTimes += 1
+        print 'iteration', numberOfTimes, 'started'
+
         # update previous translation probabilities, set them to the current values
         translationProbsPreviousStep = copy.copy(translationProbs)
 
@@ -115,41 +118,40 @@ def ExpectationMaximization(sentencePairs):
         """
     return translationProbs
 
-def loadSentences(encorpus, nlcorpus):
+def loadSentences(encorpus, forcorpus):
     fen = open(encorpus,'r')
-    fnl = open(nlcorpus,'r')
+    ffor = open(forcorpus,'r')
     pairs = []
-    for engSentence, nlSentence in itertools.izip(fen,fnl):
+    maxM = 0
+    maxL = 0
+    for engSentence, forSentence in itertools.izip(fen,ffor):
         #remove unnecessary characters
-        engSentence = re.sub('["#$%&()?!*+,./:;<=>\^{}~]', '', engSentence)
-        nlSentence = re.sub('["#$%&()?!*+,./:;<=>\^{}~]', '', nlSentence)
-        langpair = (engSentence.split(), nlSentence.split())
-        pairs.append(langpair)
-    return pairs
+        engSentence = re.sub('["#$%&()?!*+,./:;<=>\^{}~]', '', engSentence).split()
+        if len(engSentence)>maxL:
+           maxL = len(engSentence)
+        forSentence = re.sub('["#$%&()?!*+,./:;<=>\^{}~]', '', nlSentence).split()
+        if len(forSentence)>maxM:
+           maxM = len(forSentence)
 
-<<<<<<< HEAD
+
+        langpair = (engSentence,forSentence)
+        pairs.append(langpair)
+    return pairs, maxM, maxL
+
+
 def main():
     """
-=======
-def main(): 
-    
->>>>>>> b1939ee2f73dde2450f5f8c5176090fae523601b
     pairedSentences = [('mi casa verde'.split(), 'my green house'.split()),
                         ('casa verde'.split(), 'green house'.split()),
                         ('la casa'.split(), 'the house'.split())]
 
     """
-    EnglishCorpus = "corpus.en"
-    ForeignCorpus = "corpus.nl"
+    EnglishCorpus = "corpusmini.en"
+    ForeignCorpus = "corpusmini.nl"
     # pairedSentences looks like: [(['mi', 'casa', 'verde'], ['my', 'green', 'house']), (['casa', 'verde'], ['green', 'house']), (['la', 'casa'], ['the', 'house'])]
-    pairedSentences = loadSentences(ForeignCorpus, EnglishCorpus)
-<<<<<<< HEAD
+    pairedSentences, maxM, maxL = loadSentences(ForeignCorpus, EnglishCorpus)
 
-=======
-    """
-    
->>>>>>> b1939ee2f73dde2450f5f8c5176090fae523601b
-    print ExpectationMaximization(pairedSentences)
+    print ExpectationMaximization(pairedSentences, maxM, maxL)
 
 
 if __name__ == '__main__':
