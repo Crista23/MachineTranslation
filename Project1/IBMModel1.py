@@ -1,7 +1,7 @@
 from __future__ import division
 from collections import defaultdict
 import copy, itertools, operator, re
- 
+
 
 def ExpectationMaximization(sentencePairs):
     """ Zip function
@@ -17,15 +17,23 @@ def ExpectationMaximization(sentencePairs):
     #                                                englishVocabulary - set(['green', 'the', 'my', 'house'])
     foreignVocabulary = set(itertools.chain.from_iterable(foreignSentences))
     englishVocabulary = set(itertools.chain.from_iterable(englishSentences))
-    
+
     translationProbsPreviousStep = None
     translationProbs = {}
-    
+
     # Step 1 - Assume uniform initial probabilities t(e|f)
+    translationDictionary = defaultdict(dict)
     uniformProb = 1.0 / len(foreignVocabulary)
     for foreignWord in foreignVocabulary:
         for englishWord in englishVocabulary:
-            translationProbs[(foreignWord, englishWord)] = uniformProb
+            translationDictionary[foreignWord][englishWord] = uniformProb
+
+#
+#     # Step 1 - Assume uniform initial probabilities t(e|f)
+#     uniformProb = 1.0 / len(foreignVocabulary)
+#     for foreignWord in foreignVocabulary:
+#         for englishWord in englishVocabulary:
+#             translationProbs[(foreignWord, englishWord)] = uniformProb
 
     # compute the list of all possible alignments
     alignments = []
@@ -44,23 +52,23 @@ def ExpectationMaximization(sentencePairs):
             alignment = zip(foreign, englishPermutation)
             alignments.append(alignment)
     alignments = [alignments]
- 
+
     # Repeat until convergence
     while translationProbsPreviousStep != translationProbs:
         # update previous translation probabilities, set them to the current values
         translationProbsPreviousStep = copy.copy(translationProbs)
-        
+
         """
         print "alignments are"
         print alignments
-        
+
         Alignment example: #alignments
         [[[('casa', 'green'), ('verde', 'house')], [('casa', 'house'), ('verde', 'green')], [('la', 'the'), ('casa', 'house')], [('la', 'house'), ('casa', 'the')]]]
 
         {(('la', 'the'), ('casa', 'house')): 0.1111111111111111, (('casa', 'house'), ('verde', 'green')): 0.1111111111111111, (('casa', 'green'),
             ('verde', 'house')): 0.1111111111111111, (('la', 'house'), ('casa', 'the')): 0.1111111111111111}
         """
-        
+
         alignmentProbabilities = {}
         for alignmentList in alignments:
             for pairedAlignment in alignmentList:
@@ -90,7 +98,7 @@ def ExpectationMaximization(sentencePairs):
         defaultdict(<function <lambda> at 0x02975630>, {'house': defaultdict(<type 'float'>, {'verde': 0.0, 'casa': 1.0, 'la': 0.0}),
         'the': defaultdict(<type 'float'>, {'casa': 0.0, 'la': 0.5}), 'green': defaultdict(<type 'float'>, {'verde': 0.5, 'casa': 0.0})})
         """
-        
+
         #Normalize rows to estimate P(f|e)
         translationProbs = {}
         for englishWord, translations in weightedTranslations.iteritems():
@@ -118,20 +126,20 @@ def loadSentences(encorpus, nlcorpus):
         pairs.append(langpair)
     return pairs
 
-def main(): 
+def main():
     """
     pairedSentences = [('mi casa verde'.split(), 'my green house'.split()),
                         ('casa verde'.split(), 'green house'.split()),
                         ('la casa'.split(), 'the house'.split())]
-    
+
     """
     EnglishCorpus = "corpus.en"
     ForeignCorpus = "corpus.nl"
     # pairedSentences looks like: [(['mi', 'casa', 'verde'], ['my', 'green', 'house']), (['casa', 'verde'], ['green', 'house']), (['la', 'casa'], ['the', 'house'])]
     pairedSentences = loadSentences(ForeignCorpus, EnglishCorpus)
-    
+
     print ExpectationMaximization(pairedSentences)
- 
- 
+
+
 if __name__ == '__main__':
     main()
