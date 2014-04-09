@@ -8,7 +8,7 @@ def ibm1(sentencePairs):
     # Assume uniform initial probabilities t(e|f)
 
     print 'initializing vocabulary'
-    foreignSentences, englishSentences = zip(*sentencePairs)
+    englishSentences, foreignSentences = zip(*sentencePairs)
     foreignVocabulary = set(itertools.chain.from_iterable(foreignSentences))
     englishVocabulary = set(itertools.chain.from_iterable(englishSentences))
 
@@ -23,8 +23,9 @@ def ibm1(sentencePairs):
        print 'Starting iteration'
        counts = defaultdict(lambda: defaultdict(int))
        total = defaultdict(int)
-       maxDiff = 0
-       for fs, es in sentencePairs:
+       maxDiff = 0 # convergence criterion
+
+       for es, fs in sentencePairs:
 
            # Compute normalization
            sTotal = [0] * len(fs)
@@ -41,25 +42,26 @@ def ibm1(sentencePairs):
                       total[e] += t[e][fs[i]]/sTotal[i]
                else:
                     print 'zero'
-       # Estimate probabilities
-       for i in range(len(fs)):
-           if total[e] > 0.0:
-              for e in es:
-                  old = t[e][fs[i]]
-                  new = counts[e][fs[i]]/total[e]
-                  difference = abs(old - new)
-                  maxDiff = max(difference, maxDiff)
-        #          print old, new
-                  t[e][fs[i]] = new
-           else:
-              del t[e]
+           # Estimate probabilities
+           for i in range(len(fs)):
+               if total[e] > 0.0:
+                  for e in es:
+                      old = t[e][fs[i]]
+                      new = counts[e][fs[i]]/total[e]
+                      difference = abs(old - new)
+                      maxDiff = max(difference, maxDiff)
+   #                   print old, new
+                      t[e][fs[i]] = new
+               else:
+                  print 'zero two'
+                  del t[e][fs[i]]
 
        printBest(t)
     return t
 
 def printBest(t):
-    print sorted(t['the'].items(), key = lambda x: x[1])[0:10]
-
+    print sorted(t['the'].items(), key = lambda x: x[1],reverse=True)[0:10]
+    print sorted(t['is'].items(), key = lambda x: x[1],reverse=True)[0:10]
 
 
 
@@ -80,7 +82,7 @@ def loadSentences(encorpus, forcorpus):
 def main():
     englishCorpus = "corpusmini.en"
     foreignCorpus = "corpusmini.nl"
-    pairedSentences = loadSentences(foreignCorpus, englishCorpus)
+    pairedSentences = loadSentences(englishCorpus,foreignCorpus)
 
     t = ibm1(pairedSentences)
 
