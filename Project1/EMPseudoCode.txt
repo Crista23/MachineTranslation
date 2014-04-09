@@ -16,5 +16,3 @@ do until convergence
 		   t(f|e) = count(f|e) /total(e)
 		   
 		   
-		   
-{"today" : {"green": 0, "red" : 0}}
