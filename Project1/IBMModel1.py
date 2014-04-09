@@ -2,13 +2,6 @@ from __future__ import division
 from collections import defaultdict
 import copy, itertools, operator, re
 
-
-#def eStep():
-
-
-#def mStep():
-
-
 def ExpectationMaximization(sentencePairs, maxM, maxL):
     """ Zip function
     -if I have a list a = [(["a", "b", "c"], ["d","e","f"]), (["g","h","i"], ["j","k","l"])]
@@ -41,16 +34,19 @@ def ExpectationMaximization(sentencePairs, maxM, maxL):
 #         for englishWord in englishVocabulary:
 #             translationProbs[(foreignWord, englishWord)] = uniformProb
 
-            translationProbs[(foreignWord, englishWord)] = uniformProb
+
 
     # compute the list of all possible alignments
     print 'computing the list of possible alignments'
 
 
+
     for m in range(maxM):
         for l in range(maxL):
-            alignments[m,l] =
+            alignments[m,l] = set()
             
+            
+
 
 
     # Repeat until convergence
