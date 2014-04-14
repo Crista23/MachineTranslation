@@ -1,5 +1,5 @@
 from __future__ import division
-import ast, nltk
+import ast, nltk, collections
 
 def determineAlignment(foreignSentence, englishSentence):
     alignments = []
@@ -72,12 +72,6 @@ def getViterbiAlignments(viterbiStandard):
             #print viterbiAlignments
         i += 1
     return viterbiAlignments
-
-def precision(goldenList, standardList):
-    return
-    
-def recall(goldenList, standardList):
-    return 1
     
 def main():
     goldStandard = open("corpus_1000_gold", 'r')
@@ -87,12 +81,15 @@ def main():
     viterbiAlignments = getViterbiAlignments(viterbiStandard)
     #print len(goldStandardAlignments)
     #print len(viterbiAlignments)
+
+    
+    
     if(len(goldStandardAlignments) == len(viterbiAlignments)):
         for i in range(len(goldStandardAlignments)):
             print i
             print nltk.metrics.precision(set(goldStandardAlignments[i]), set(viterbiAlignments[i]))
             print nltk.metrics.recall(set(goldStandardAlignments[i]), set(viterbiAlignments[i]))
-
+                    
 if __name__ == '__main__':
     main()
     
