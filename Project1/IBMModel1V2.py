@@ -16,16 +16,13 @@ def ibm1(sentencePairs):
     for e in englishVocabulary:
         t[e] = defaultdict(lambda: 1.0/len(foreignVocabulary))
 
-    threshold = 0.1535
+    threshold = 0.01
     maxDiff = 1
+    nIter = 1
 
-    counter = -1
-    while maxDiff>threshold:
-       counter += 1
-       print counter
-       if(counter > 20):
-           break
-       print 'Starting iteration'
+    while nIter<21:
+       print 'Starting iteration', nIter
+       nIter += 1
        counts = defaultdict(lambda: defaultdict(int))
        total = defaultdict(int)
        maxDiff = 0 # convergence criterion
@@ -55,7 +52,6 @@ def ibm1(sentencePairs):
                       new = counts[e][fs[i]]/total[e]
                       difference = abs(old - new)
                       maxDiff = max(difference, maxDiff)
-   #                   print old, new
                       t[e][fs[i]] = new
                else:
                   print 'zero two'
@@ -69,8 +65,11 @@ def printBest(t):
     print sorted(t['is'].items(), key = lambda x: x[1],reverse=True)[0:10]
 
 
-def viterbiAlignment(sentencepairs, t):
+def viterbiAlignment(sentencepairs, t, output):
+    f = open(output, 'w')
+    count = 0
     for es, fs in sentencepairs:
+        count += 1
         alignment = [0]*len(fs)
         for j in range(len(fs)):
             maxVal = 0
@@ -82,8 +81,15 @@ def viterbiAlignment(sentencepairs, t):
                    maxVal = val
                    choice = aj
             alignment[j] = choice
-        print es,fs, alignment
 
+        f.write('Sentence pair ('+str(count)+
+                ') source length '+str(len(fs))+
+                ' target length '+ str(len(es)-1)+
+                ' score ??' #??
+                +'\n')
+        f.write(str(alignment)+'\n')
+        # print es,fs, alignment
+    f.close()
 
 
 
@@ -96,8 +102,12 @@ def loadSentences(encorpus, forcorpus):
     pairs = []
     for engSentence, forSentence in itertools.izip(fen,ffor):
         #remove unnecessary characters
-        engSentence = re.sub('["#$%&()?!*+,./:;<=>\^{}~]', '', engSentence).split()
-        forSentence = re.sub('["#$%&()?!*+,./:;<=>\^{}~]', '', forSentence).split()
+        #engSentence = re.sub('["#$%&()?!*+,./:;<=>\^{}~]', '', engSentence)
+        #forSentence = re.sub('["#$%&()?!*+,./:;<=>\^{}~]', '', forSentence)
+
+        engSentence = engSentence.split()
+        engSentence.insert(0, 'NULL')
+        forSentence = forSentence.split()
 
         langpair = (engSentence,forSentence)
         pairs.append(langpair)
@@ -105,12 +115,21 @@ def loadSentences(encorpus, forcorpus):
 
 
 def main():
-    englishCorpus = "corpus_1000.en"
-    foreignCorpus = "corpus_1000.nl"
+    test = True
+
+    if test:
+       englishCorpus = "corpusmini.en"
+       foreignCorpus = "corpusmini.nl"
+       viterbi = "corpusmini_viterbi.txt"
+    else:
+       englishCorpus = "corpus_1000.en"
+       foreignCorpus = "corpus_1000.nl"
+       viterbi = "corpus_1000_viterbi.txt"
+
     pairedSentences = loadSentences(englishCorpus,foreignCorpus)
 
     t = ibm1(pairedSentences)
-    viterbiAlignment(pairedSentences, t)
+    viterbiAlignment(pairedSentences, t, viterbi)
 
 
 if __name__ == '__main__':
