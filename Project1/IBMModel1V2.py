@@ -62,15 +62,38 @@ def ibm1(sentencePairs):
     return t
 
 def printBest(t):
+    print 'the'
     print sorted(t['the'].items(), key = lambda x: x[1],reverse=True)[0:10]
+    print 'is'
     print sorted(t['is'].items(), key = lambda x: x[1],reverse=True)[0:10]
+    
+def translationTable(t,tV, output):
+    f = open(output, 'w')
+
+    words = ['the', 'in', '.', 'all','should', 'public']
+    for word in words:
+        topT = sorted(t[word].items(), key = lambda x: x[1],reverse=True)
+
+        f.write('\n'+ word+'\tTrained:\tViterbi:\n')
+        for i in range(10):
+            f.write(str(topT[i][0]))
+            f.write('\t'+ str(topT[i][1]))
+            f.write('\t'+ str(tV[word][topT[i][0]]))
+#            f.write(str(topT[i])+'\t'+str(topTV[i])+'\n')
+
+            f.write('\n')
+
+    f.close()
+
 
 
 def viterbiAlignment(sentencepairs, t, output):
+    counts = defaultdict(lambda: defaultdict(int))
+    total = defaultdict(int)
     f = open(output, 'w')
-    count = 0
+    i = 0
     for es, fs in sentencepairs:
-        count += 1
+        i += 1
         alignment = [0]*len(fs)
         for j in range(len(fs)):
             maxVal = 0
@@ -82,8 +105,10 @@ def viterbiAlignment(sentencepairs, t, output):
                    maxVal = val
                    choice = aj
             alignment[j] = choice
+            counts[es[choice]][fs[j]] += 1
+            total[es[choice]] += 1
 
-        f.write('Sentence pair ('+str(count)+
+        f.write('Sentence pair ('+str(i)+
                 ') source length '+str(len(fs))+
                 ' target length '+ str(len(es)-1)+
                 ' score ??' #??
@@ -91,6 +116,14 @@ def viterbiAlignment(sentencepairs, t, output):
         f.write(str(alignment)+'\n')
         # print es,fs, alignment
     f.close()
+    
+    # Create the table of translation probabilities
+    # from the Viterbi alignments:
+    tV = defaultdict(lambda: defaultdict(int))
+    for eWord, trans in counts.iteritems():
+        for fWord, value in trans.iteritems():
+            tV[eWord][fWord] = value/ total[eWord]
+    return tV
 
 
 
@@ -116,22 +149,27 @@ def loadSentences(encorpus, forcorpus):
 
 
 def main():
-    test = True
+    test = False
 
     if test:
        englishCorpus = "corpusmini.en"
        foreignCorpus = "corpusmini.nl"
        viterbi = "corpusmini_viterbi.txt"
+       table = "corpusmini_table.txt"
     else:
        englishCorpus = "corpus_1000.en"
        foreignCorpus = "corpus_1000.nl"
        viterbi = "corpus_1000_viterbi.txt"
+       table = "corpus_1000_table.txt"
 
     pairedSentences = loadSentences(englishCorpus,foreignCorpus)
 
     t = ibm1(pairedSentences)
-    viterbiAlignment(pairedSentences, t, viterbi)
+    tV = viterbiAlignment(pairedSentences, t, viterbi)
 
+    translationTable(t,tV, table)
+#    printBest(t)
+#    printBest(tV)
 
 if __name__ == '__main__':
     main()
