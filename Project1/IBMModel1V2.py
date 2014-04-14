@@ -116,15 +116,21 @@ def loadSentences(encorpus, forcorpus):
 
 
 def main():
-    englishCorpus = "corpusmini.en"
-#    englishCorpus = "corpus_1000.en"
-    foreignCorpus = "corpusmini.nl"
-#    foreignCorpus = "corpus_1000.nl"
+    test = True
+
+    if test:
+       englishCorpus = "corpusmini.en"
+       foreignCorpus = "corpusmini.nl"
+       viterbi = "corpusmini_viterbi.txt"
+    else:
+       englishCorpus = "corpus_1000.en"
+       foreignCorpus = "corpus_1000.nl"
+       viterbi = "corpus_1000_viterbi.txt"
 
     pairedSentences = loadSentences(englishCorpus,foreignCorpus)
 
     t = ibm1(pairedSentences)
-    viterbiAlignment(pairedSentences, t, 'viterbiAligned.txt')
+    viterbiAlignment(pairedSentences, t, viterbi)
 
 
 if __name__ == '__main__':
