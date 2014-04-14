@@ -2,17 +2,13 @@
 \usepackage{acl2014}
 \usepackage{times}
 \usepackage{url}
-\usepackage{latexsym}
+%\usepackage{latexsym}
 
-
-%pseudocode:
-\usepackage{algorithm}
-\usepackage{algpseudocode} 
 
 %figures:
 \usepackage{tikz}
 \usetikzlibrary{trees,positioning,backgrounds}
-\usepackage{tikz-qtree}
+%\usepackage{tikz-qtree}
 \usepackage{subcaption}
 
 %references and keeping floats in place
@@ -20,6 +16,7 @@
 \usepackage[section]{placeins}
 
 \usepackage{amsmath} 
+\renewcommand{\vec}[1]{\mathbf{#1}}
 
 \title{Statistical Structure in Language Processing \\ IBM Model 1}
 \author{ Cristina G\^arbacea\\
@@ -27,8 +24,8 @@
   {\tt cr1st1na.garbacea@gmail.com} 
   \\\And
   Sara Veldhoen \\
-   \\
-  {\tt sara.veldhoen@gmail.com} \\}
+10545298   \\
+  {\small \tt sara.veldhoen@student.uva.nl} \\}
 
 \date{}
 
@@ -37,47 +34,63 @@
 \maketitle
 
 \begin{abstract}
-Given a parallel Dutch - English corpus, in this paper we present the theoretical notions underlying the IBM Model 1 we implemented and the Expectation Maximization algorithm we applied to train the given corpus. We are trying to show that this model can easily overfit and that maximizing the likelihood of the training data can result in low performance accuracy. For this reason we came with our own extension to the model, which we compare and evaluate against the basic IBM model. 
+In this paper we present the theoretical notions underlying the IBM Model 1 we implemented and the Expectation Maximization algorithm we applied to train the given parallel Dutch - English corpus. We show that this model can easily overfit and that maximizing the likelihood of the training data can result in low performance accuracy.% Do we?
+ For this reason we came with our own extension to the model, which we compare and evaluate against the basic IBM model. 
 \end{abstract}
 
 \section{Introduction}
-Statistical alignment models are widely used nowadays in a variety of natural language processing applications, ranging from machine translation to question answering and information retrieval. The goal of finding the best English translation $e$ of a foreign sentence $f$ is modeled under the assumption of the \textit{noisy channel} hypothesis, which considers the foreign sentence as a "corrupted" instance of the original English sentence. The English sentence which is at the source of its foreign counterpart is an unknown issue, and thus the task of translating $f$ into $e$ becomes one of maximizing the probability of the English sentence given the foreign sentence, $P(e|f)$. According to Bayes' theorem, 
+Statistical alignment models are widely used nowadays in a variety of natural language processing applications, ranging from machine translation to question answering and information retrieval. The goal of finding the best English translation $\vec{e}$ of a foreign sentence $\vec{f}$ is modeled under the assumption of the \textit{noisy channel} hypothesis, which considers the foreign sentence as a ``corrupted" instance of the original English sentence. The English sentence which is at the source of its foreign counterpart is an unknown issue, and thus the task of translating $\vec{f}$ into $\vec{e}$ becomes one of maximizing the probability of the English sentence given the foreign sentence, $P(\vec{e}|\vec{f})$. According to Bayes' theorem, 
 
 \begin{equation}
-P(e|f)= \frac{P(e)\cdot P(f|e)}{P(f)}
+P(\vec{e}|\vec{f})= \frac{P(\vec{e})\cdot P(\vec{f}|\vec{e})}{P(\vec{f})}
 \end{equation}
 
 the translation problem can be expressed as:
 \begin{equation}
-P(e|f)= arg \ \underset{e}{max} \ P(e)\cdot P(f|e)
+P(\vec{e}|\vec{f})= arg \ \underset{\vec{e}}{max} \ P(\vec{e})\cdot P(\vec{f}|\vec{e})
 \end{equation}
 
-where $P(e)$ denotes the language task and $P(e|f)$ denotes the translation task. 
+where $P(\vec{e})$ denotes the language model, that takes care of the fluency of the output, 
+ and $P(\vec{e}|\vec{f})$ denotes the translation model, that makes sure the translation is adequate. 
 
-IBM models focus on the translation task only which assumes that word alignments exists between the words of the foreign and the English sentence. The words of the English sentence are called \textit{cepts} and generally within the IBM models groups of cepts cannot be aligned to group of words from the other sentence. The rule is that each foreign word or group of foreign words can be aligned to at most one English word. To counter against the case when English words have no foreign correspondent, the \textit{null} word is added as well to the foreign vocabulary, resulting in a fully defined alignment function. Hence the translation probability $P(f|e)$ can be rewritten as the sum on all alignments of conditional probabilities $P(f, a|e)$:
-\begin{equation}
-P(f|e) = \sum_a P(f,a|e)
-\end{equation}
+In order to be able to approximate this probability, we need to make assumptions. In %cite IBM paper
+a series of increasingly complex models is presented. We implemented the first model, hereafter IBM model 1. 
+In what follows we present the this model in section \ref{IBM1}, together with the Expectation Maximization formula used for training this model. We came up with an improvement over this model, which we introduce in section \ref{Improvement}. Then comes an evaluation of the alignment quality for both models in section \ref{Eval} and finally we conclude in Section \ref{Concl}.
 
-where $a$ represents one possible alignment between the foreign and the English sentences. The conditional probability $P(f,a|e)$ can in turn be expressed as:
-
-\begin{equation}
-P(m|e) \prod_{j=1}^{m} P(a_j|a_1^{j-1}, f_1^{j-1}, m, e) P(f_j|a_1^j,f_1^{j-1},m,e)
-\end{equation}
-
-In what follows we present the IBM Model in Section \ref{IBM1}, the Expectation Maximization formula used for training this model in Section \ref{EM}, our improvements over this model in Section \ref{Improvment}, evaluation of the alignment quality in Section \ref{Eval} and finally we conclude in Section \ref{Concl}.
 
 
 
 \section{IBM Model 1}
 \label{IBM1}
-IBM models build upon one another in increasing order of complexity. IBM Model 1 is the simplest probabilistic generative model based on lexical translation which assumes a word-to-word mapping between the target and the source sentence. It is widely used in working with parallel bilingual corpora, aligning syntactic fragments and estimating phrase translation probabilities.
+
+The assumption underlying the IBM models is that translating text comes down to aligning the words 
+%IBM models focus on the translation task only which assumes that word alignments exist between the words 
+of the foreign and the English sentence, and translating the words independently.
+The words of the English sentence are called \textit{cepts} and generally within the IBM models \emph{groups} of cepts cannot be aligned to \emph{groups} of words in the foreign sentence.  Rather, each cept  is aligned to one foreign word or, in case there is no foreign correspondent, to the so called \textit{null} word.
+Because of this simplification, an alignment can be represented as a vector that has the same length as the English sentence.
+
+Hence the translation probability $P(\vec{f}|\vec{e})$ can be rewritten as the sum over all possible alignments $\vec{a}$ of conditional probabilities $P(\vec{f}, \vec{a}|\vec{e})$:
+\begin{equation}
+P(\vec{f}|\vec{e}) = \sum_a P(\vec{f},\vec{a}|\vec{e})
+\end{equation}
+
+The conditional probability $P(\vec{f},\vec{a}|\vec{e})$ can in turn be expressed as:
+%add proof?
+
+\begin{equation}
+P(m|\vec{e}) \prod_{j=1}^{m} P(a_j|a_1^{j-1}, f_1^{j-1}, m, \vec{e}) P(f_j|a_1^j,f_1^{j-1},m,\vec{e})
+\end{equation}
+
+
+%IBM models build upon one another in increasing order of complexity. IBM Model 1 is the simplest probabilistic generative model based on lexical translation which assumes a word-to-word mapping between the target and the source sentence. It is widely used in working with parallel bilingual corpora, aligning syntactic fragments and estimating phrase translation probabilities.
 
 The translation probability of a foreign sentence $f = (f_1,\dots, f_i \dots , f_{l_f})$ into an English sentence $e = (e_1,\dots, e_j,\dots , e_{l_e})$ based on an alignment function $a : j \rightarrow i$ is defined as:
 
 \begin{equation}
 p(e,a|f) = \frac{\epsilon}{(l_f + 1)^le} \prod_{j=1}^{l_e}t(e_j|f(a_j))
 \end{equation}
+
+%Did the languages change position here? We were estimating p(f,a|e)
 
 \section{EM Training Formula}
 \label{EM}
@@ -86,7 +99,7 @@ The parameters of IBM Model 1 for a given pair of languages are estimated using 
 + training formula..
 
 \section{Improvement Over IBM Model 1}
-\label{Improvment}
+\label{Improvement}
 
 \section{Experiments and Results}
 \label{Eval}
