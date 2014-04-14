@@ -19,7 +19,12 @@ def ibm1(sentencePairs):
     threshold = 0.1535
     maxDiff = 1
 
+    counter = -1
     while maxDiff>threshold:
+       counter += 1
+       print counter
+       if(counter > 20):
+           break
        print 'Starting iteration'
        counts = defaultdict(lambda: defaultdict(int))
        total = defaultdict(int)
@@ -100,8 +105,8 @@ def loadSentences(encorpus, forcorpus):
 
 
 def main():
-    englishCorpus = "corpusmini.en"
-    foreignCorpus = "corpusmini.nl"
+    englishCorpus = "corpus_1000.en"
+    foreignCorpus = "corpus_1000.nl"
     pairedSentences = loadSentences(englishCorpus,foreignCorpus)
 
     t = ibm1(pairedSentences)
