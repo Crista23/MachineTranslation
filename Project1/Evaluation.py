@@ -4,10 +4,9 @@ import ast, nltk, collections
 def determineAlignment(foreignSentence, englishSentence):
     alignments = []
     foreignWords = foreignSentence.split(" ")
-    #print "foreign words"
-    #print foreignWords
     englishWords =  englishSentence.replace("({ ", "").split(" }) ")
-    #print "english words"
+    englishWords = [word for word in englishWords if word != '']
+    #print "engWords"
     #print englishWords
     for i in range(len(foreignWords)):
         index = i + 1
@@ -15,14 +14,12 @@ def determineAlignment(foreignSentence, englishSentence):
             lookUpWordIndex = str(index)
             engValues = englishWords[j].split(" ")
             if (lookUpWordIndex in engValues):
-                #print foreignWords[i] + " found in " + engValues[0]
                 alignments.append(j)
-    #print "alignments"
-    #print alignments
-    return alignments
+    return alignments, len(englishWords)-1
 
 def getGoldStandardAlignments(goldStandard):
     goldAlignments = []
+    englishSentencesLength = []
     
     alignmentInfo = ""
     foreignSentence = ""
@@ -39,20 +36,20 @@ def getGoldStandardAlignments(goldStandard):
             foreignSentence = line
         i += 1
         if(i % 3 == 0):
-            #print "alignInfo: " + alignmentInfo
-            #print "foreignSentence: " + foreignSentence
-            #print "englishSentence: " + englishSentence
-
-            goldAlignment = determineAlignment(foreignSentence, englishSentence)
+            goldAlignment, noEngWords = determineAlignment(foreignSentence, englishSentence)
             goldAlignments.append(goldAlignment)
-            #print "gold alignments"
-            #print goldAlignments
+            
+            englishSentencesLength.append(noEngWords)
             
             alignmentInfo = ""
             foreignSentence = ""
             englishSentence = ""
-        #if i > 2:
-        #    break
+
+    f = open("EngSentencesLength.txt", "w")
+    for engLength in englishSentencesLength:
+        f.write(str(engLength) + ",")
+    f.close()
+        
     return goldAlignments
 
 def getViterbiAlignments(viterbiStandard):
@@ -62,14 +59,7 @@ def getViterbiAlignments(viterbiStandard):
         if(i%2 == 0):
             alignment = line.replace("\n", "")
             alignment = ast.literal_eval(alignment)
-            #print '|' + alignment + '|'
-            #print "alignment"
-            #print alignment
-            #print "list alignment"
-            #print list(alignment)
             viterbiAlignments.append(alignment)
-            #print "viterbi"
-            #print viterbiAlignments
         i += 1
     return viterbiAlignments
     
@@ -78,18 +68,35 @@ def main():
     viterbiStandard = open("corpus_1000_viterbi.txt", 'r')
 
     goldStandardAlignments = getGoldStandardAlignments(goldStandard)
-    viterbiAlignments = getViterbiAlignments(viterbiStandard)
-    #print len(goldStandardAlignments)
-    #print len(viterbiAlignments)
-
-    
+    viterbiAlignments = getViterbiAlignments(viterbiStandard)    
     
     if(len(goldStandardAlignments) == len(viterbiAlignments)):
+        precisionValues = []
+        recallValues = []
+        F1Scores= []
         for i in range(len(goldStandardAlignments)):
-            print i
-            print nltk.metrics.precision(set(goldStandardAlignments[i]), set(viterbiAlignments[i]))
-            print nltk.metrics.recall(set(goldStandardAlignments[i]), set(viterbiAlignments[i]))
-                    
+            #print i
+            #print nltk.metrics.precision(set(goldStandardAlignments[i]), set(viterbiAlignments[i]))
+            #print nltk.metrics.recall(set(goldStandardAlignments[i]), set(viterbiAlignments[i]))
+            #print nltk.metrics.f_measure(set(goldStandardAlignments[i]), set(viterbiAlignments[i]))
+            precision = nltk.metrics.precision(set(goldStandardAlignments[i]), set(viterbiAlignments[i]))
+            recall = nltk.metrics.recall(set(goldStandardAlignments[i]), set(viterbiAlignments[i]))
+            F1score = nltk.metrics.f_measure(set(goldStandardAlignments[i]), set(viterbiAlignments[i]))
+            precisionValues.append(precision)
+            recallValues.append(recall)
+            F1Scores.append(F1score)
+
+        # final values
+        precisionValue = sum(precisionValues)/len(precisionValues)
+        recallValue = sum(recallValues)/len(precisionValues)
+        print "Precision: " + str(precisionValue)
+        print "Recall: " + str(recallValue)
+        f = open("F1scores.txt", "w")
+        for f1score in F1Scores:
+            f.write(str(f1score) + ",")
+        f.close()
+        
+            
 if __name__ == '__main__':
     main()
     
