@@ -34,8 +34,9 @@
 \maketitle
 
 \begin{abstract}
-In this paper we present the theoretical notions underlying the IBM Model 1 we implemented and the Expectation Maximization algorithm we applied to train the given parallel Dutch - English corpus. We show that this model can easily overfit and that maximizing the likelihood of the training data can result in low performance accuracy.% Do we?
- For this reason we came with our own extension to the model, which we compare and evaluate against the basic IBM model. 
+In this paper we present the theoretical notions underlying the IBM Model 1 we implemented and the Expectation Maximization algorithm we applied to train the given parallel Dutch - English corpus. 
+%We show that this model can easily overfit and that maximizing the likelihood of the training data can result in low performance accuracy.% Do we?
+We also came up with our own extension to the model, which we compare and evaluate against the basic IBM model 1. 
 \end{abstract}
 
 \section{Introduction}
@@ -70,24 +71,22 @@ The words of the English sentence are called \textit{cepts} and generally within
 Because of this simplification, an alignment can be represented as a vector that has the same length as the English sentence.
 
 Hence the translation probability $P(\vec{f}|\vec{e})$ can be rewritten as the sum over all possible alignments $\vec{a}$ of conditional probabilities $P(\vec{f}, \vec{a}|\vec{e})$:
-\begin{equation}
-P(\vec{f}|\vec{e}) = \sum_a P(\vec{f},\vec{a}|\vec{e})
-\end{equation}
-
-The conditional probability $P(\vec{f},\vec{a}|\vec{e})$ can in turn be expressed as:
-%add proof?
-
-\begin{equation}
-P(m|\vec{e}) \prod_{j=1}^{m} P(a_j|a_1^{j-1}, f_1^{j-1}, m, \vec{e}) P(f_j|a_1^j,f_1^{j-1},m,\vec{e})
-\end{equation}
+\begin{align}
+P(\vec{f}|\vec{e}) =& \sum_\vec{a} P(\vec{f},\vec{a}|\vec{e})\\
+=&\sum_\vec{a}  P(\vec{f},\vec{a},m|\vec{e}) \\
+=&\sum_\vec{a}  P(m|\vec{e})\times P(\vec{f}|\vec{a},m,\vec{e})\\
+=&  P(m|\vec{e}) \sum_\vec{a} P(\vec{f}|\vec{a},m,\vec{e})\\
+P(\vec{f}|\vec{a},m,\vec{e})=&\prod_{j=1}^{m} P(a_j|a_1^{j-1}, f_1^{j-1}, m, \vec{e}) \notag \\
+& \times  P(f_j|a_1^j,f_1^{j-1},m,\vec{e})
+\end{align}
 
 
 %IBM models build upon one another in increasing order of complexity. IBM Model 1 is the simplest probabilistic generative model based on lexical translation which assumes a word-to-word mapping between the target and the source sentence. It is widely used in working with parallel bilingual corpora, aligning syntactic fragments and estimating phrase translation probabilities.
 
-The translation probability of a foreign sentence $f = (f_1,\dots, f_i \dots , f_{l_f})$ into an English sentence $e = (e_1,\dots, e_j,\dots , e_{l_e})$ based on an alignment function $a : j \rightarrow i$ is defined as:
+The translation probability of a foreign sentence $\vec{f}$ of length $l$ into an English sentence $\vec{e}$ of length $m$ that is aligned as $\vec{a}$ is defined as:
 
 \begin{equation}
-p(e,a|f) = \frac{\epsilon}{(l_f + 1)^le} \prod_{j=1}^{l_e}t(e_j|f(a_j))
+p(\vec{e},\vec{a}|\vec{f}) = \frac{\epsilon}{(l + 1)^m} \prod_{j=1}^{m}t(e_j|f(a_j))
 \end{equation}
 
 %Did the languages change position here? We were estimating p(f,a|e)
@@ -100,6 +99,13 @@ The parameters of IBM Model 1 for a given pair of languages are estimated using 
 
 \section{Improvement Over IBM Model 1}
 \label{Improvement}
+
+In IBM Model 1, all alignments are equally probable. The Viterbi alignment can thus be found by simply choosing, for each word, the cept that has the highest translation probability. 
+
+An improvement can be made by introducing a probability function over alignments: $p(a|m,l)$. 
+For simplification, we assume independence of each alignment decision, such that we can compute $p(a_j|j,m,l)$ for each word.
+
+This is also done in IBM Model 2. However,  instead of training the alignment probabilities, as in IBM Model 2, we use a heuristic function. We base this function on the assumption that a word in the input should stay close, i.e. we want to favor $a_j=j$ over $a_j>j$ and $a_j<j$. Furthermore, we want to favor choosing the null word %ref
 
 \section{Experiments and Results}
 \label{Eval}
