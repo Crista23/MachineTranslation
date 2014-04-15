@@ -56,9 +56,9 @@ where $P(\vec{e})$ denotes the language model, that takes care of the fluency of
  and $P(\vec{e}|\vec{f})$ denotes the translation model, that makes sure the translation is adequate. 
 
 In order to be able to approximate this probability, we need to make assumptions. In %cite IBM paper
-a series of increasingly complex models is presented. We implemented the first model, hereafter IBM model~1. 
+\cite{Koehn:2010}, \cite{Brown:2010} a series of increasingly complex models is presented. We implemented the first model, hereafter IBM model~1. 
 
-In what follows we present the this model in section~\ref{IBM1}, together with the Expectation Maximization formula used for training this model. We came up with an improvement over this model, which we introduce in section~\ref{Improvement}. Then comes an evaluation of the alignment quality for both models in section~\ref{Eval} and finally we conclude in Section~\ref{Concl}.
+In what follows we present this model in section~\ref{IBM1}, together with the Expectation Maximization formula used for training this model. We came up with an improvement over this model, which we introduce in section~\ref{Improvement}. Then comes an evaluation of the alignment quality for both models in section~\ref{Eval} and finally we conclude in Section~\ref{Concl}.
 
 
 
@@ -93,9 +93,9 @@ P(\vec{f}|\vec{a},m,\vec{e})=&\prod_{j=1}^{m} P(a_j|a_1^{j-1}, f_1^{j-1}, m, \ve
 \paragraph{EM Training}
 The input to the training is a corpus of paired sentences.
 To estimate the latent variables, alignments, a version of expectation maximization is used.
-Training focuses on the parameters in equation \ref{p(f|a,m,e)}. The first term, the alignment probability, is assumed to be uniform in IBM Model 1. The second term 
+Training focuses on the parameters in equation \ref{p(f|a,m,e)}. The first term, the alignment probability, is assumed to be uniform in IBM Model 1.
 
- The initial step of EM consists in setting uniform translation probabilities $t(e|f)$ over the target vocabulary. 
+The initial step of EM consists in setting uniform translation probabilities $t(e|f)$ over the target vocabulary. 
 
 In the E-step, the alignment probabilities are computed. Note that this is done implicitly, in the process of gathering the fractional counts:
 \begin{align}
@@ -124,16 +124,45 @@ This is also done in IBM Model 2. However,  instead of training the alignment pr
 
 \section{Experiments and Results}
 \label{Eval}
+We implemented IBM Model 1 and trained it with 20 iterations of the Expectation Maximization algorithm on the given Dutch-English parallel corpus consisting of 1.000 sentences. We evaluated the alignment quality against the quality of the alignments provided by Giza++. Below we report the results we obtained, as well as the results of our approach:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c | c | c | c |}
+  \hline
+  & \textbf{Precison} & \textbf{Recall} & \textbf{F1-score} \\
+  \hline 
+  IBM Model 1 & 0.9111 & 0.9053 & 0.9063\\
+  Our extension & 0.7995 & 0.8901 & 0.8378\\
+  \hline
+\end{tabular}
+\caption{Results after training IBM Model 1 with 20 Expectation Maximization iterations}
+\label{results}
+\end{table}
+
+We notice a drop in precision, while the recall tends to be around the same value.
 
 \section{Conclusion}
 \label{Concl}
 
 \begin{thebibliography}{}
-\bibitem[1]{}
+%\bibitem[\protect\citename{Gusfield}1997]{Gusfield:97}
+%Dan Gusfield.
+%\newblock 1997.
+%\newblock {\em Algorithms on Strings, Trees and Sequences}.
+%\newblock Cambridge University Press, Cambridge, UK.
+
+\bibitem[1]{Koehn:2010}
 Philipp Koehn
 \newblock 2010.
 \newblock {\em Statistical Machine Translation}.
 \newblock Cambridge University Press.
+
+\bibitem[2]{Brown:2010}
+Brown, Peter F and Pietra, Vincent J Della and Pietra, Stephen A Della and Mercer, Robert L
+\newblock 1993.
+\newblock {\em The mathematics of statistical machine translation: Parameter estimation}.
+\newblock Computational linguistics. 19.2: 263-311.
 
 \end{thebibliography}
 

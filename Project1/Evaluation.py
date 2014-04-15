@@ -89,8 +89,10 @@ def main():
         # final values
         precisionValue = sum(precisionValues)/len(precisionValues)
         recallValue = sum(recallValues)/len(precisionValues)
+        F1Value = sum(F1Scores)/len(F1Scores)
         print "Precision: " + str(precisionValue)
         print "Recall: " + str(recallValue)
+        print "F1score: " + str(F1Value)
         f = open("F1scores.txt", "w")
         for f1score in F1Scores:
             f.write(str(f1score) + ",")
