@@ -43,11 +43,11 @@ We also came up with our own extension to the model, which we compare and evalua
 \section{Introduction}
 %Statistical alignment models are widely used nowadays in a variety of natural language processing applications, ranging from machine translation to question answering and information retrieval. 
 The goal of finding the best English translation $\vec{e}$ of a foreign sentence $\vec{f}$ is modeled under the assumption of the \textit{noisy channel} hypothesis, which considers the foreign sentence as a ``corrupted" instance of the original English sentence. The English sentence which is at the source of its foreign counterpart is an unknown issue, and thus the task of translating $\vec{f}$ into $\vec{e}$ becomes one of maximizing the probability of the English sentence given the foreign sentence, $P(\vec{e}|\vec{f})$. According to Bayes' theorem, 
-
-\begin{equation}
-P(\vec{e}|\vec{f})= \frac{P(\vec{e})\cdot P(\vec{f}|\vec{e})}{P(\vec{f})}
-\end{equation}
-
+%
+%\begin{equation}
+%P(\vec{e}|\vec{f})= \frac{P(\vec{e})\cdot P(\vec{f}|\vec{e})}{P(\vec{f})}
+%\end{equation}
+%
 the translation problem can be expressed as:
 \begin{equation}
 P(\vec{e}|\vec{f})= arg \ \underset{\vec{e}}{max} \ P(\vec{e})\cdot P(\vec{f}|\vec{e})
@@ -118,10 +118,13 @@ Where equation \ref{normalization} ($\lambda_e$) defines the normalization param
 
 In IBM Model 1, all alignments are equally probable. The Viterbi alignment can thus be found by simply choosing, for each word, the cept that has the highest translation probability. 
 
-An improvement can be made by introducing a probability function over alignments: $p(a|m,l)$. 
-For simplification, we assume independence of each alignment decision, such that we can compute $p(a_j|j,m,l)$ for each word.
+An improvement can be made by introducing a probability function over alignments: the first term in equation \ref{p(f|a,m,e)}.
+For simplification, we assume independence of each alignment decision, and independence of lexical items, such that we can compute $p(a_j|j,m,l)$ for each word.
 
-This is also done in IBM Model 2. However,  instead of training the alignment probabilities, as in IBM Model 2, we use a heuristic function. We base this function on the assumption that a word in the input should stay close, i.e. we want to favor $a_j=j$ over $a_j>j$ and $a_j<j$. Furthermore, we tried to favor choosing the null word as presented in \cite{Moore:2004}, but that resulted in a drop in performance.
+This is also done in IBM Model 2. However,  instead of training the alignment probabilities, as in IBM Model 2, we use a heuristic function. We base this function on the assumption that a word in the input should stay close, i.e. we want to favor $a_j=j$ over $a_j>j$ and $a_j<j$. Furthermore, we tried to favor choosing the null word as presented in \cite{Moore:2004}, but that resulted in a drop in performance. The alignment function we created is defined as 
+\begin{equation}
+p(a_j|j,m) = \frac{1}{m+|a_j-j|}
+\end{equation}
 
 \section{Experiments and Results}
 \label{Eval}
