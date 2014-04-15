@@ -1,5 +1,7 @@
 from __future__ import division
 import copy, itertools, operator, re
+import json
+import io
 from collections import defaultdict
 
 def ibm1(sentencePairs):
@@ -65,11 +67,11 @@ def printBest(t):
     print sorted(t['the'].items(), key = lambda x: x[1],reverse=True)[0:10]
     print 'is'
     print sorted(t['is'].items(), key = lambda x: x[1],reverse=True)[0:10]
-    
+
 def translationTable(t,tV, output):
     f = open(output, 'w')
 
-    words = ['the', 'in', '.', 'all','should', 'public']
+    words = ['NULL', 'the', 'in', '.', 'all','should', 'public']
     for word in words:
         topT = sorted(t[word].items(), key = lambda x: x[1],reverse=True)
 
@@ -85,8 +87,25 @@ def translationTable(t,tV, output):
     f.close()
 
 
+def pAl(j,m,aj, improv):
+    if not improv:
+       return 1/m
+    else:
+       distance = abs(aj - j)
+       return 1/(m+distance)
+#    else:
+#       if m < 2:
+#          return 1/2
+#       else:
+#          if aj == j:
+#             return 1/3
+#          if aj == 0:
+#             return 1/3
+#          else:
+#             return (1/3)/m
 
-def viterbiAlignment(sentencepairs, t, output):
+
+def viterbiAlignment(sentencepairs, t, output, improv):
     counts = defaultdict(lambda: defaultdict(int))
     total = defaultdict(int)
     f = open(output, 'w')
@@ -94,15 +113,19 @@ def viterbiAlignment(sentencepairs, t, output):
     for es, fs in sentencepairs:
         i += 1
         alignment = [0]*len(fs)
+        score = 1.0
         for j in range(len(fs)):
-            maxVal = 0
+            maxVal = 0.0
             choice = 0
             for aj in range(len(es)):
-                val = t[es[aj]][fs[j]]
-                  #*a(aj|j,m,l), which is uniform in model 1
+                try:
+                   val = t[es[aj]][fs[j]]* pAl(j,len(fs),aj,improv)
+                except:
+                   print 'problem',  es[aj], fs[j]
                 if val> maxVal:
                    maxVal = val
                    choice = aj
+            score *= maxVal
             alignment[j] = choice
             counts[es[choice]][fs[j]] += 1
             total[es[choice]] += 1
@@ -110,12 +133,12 @@ def viterbiAlignment(sentencepairs, t, output):
         f.write('Sentence pair ('+str(i)+
                 ') source length '+str(len(fs))+
                 ' target length '+ str(len(es)-1)+
-                ' score ??' #??
+                ' score ' +str(score)
                 +'\n')
         f.write(str(alignment)+'\n')
         # print es,fs, alignment
     f.close()
-    
+
     # Create the table of translation probabilities
     # from the Viterbi alignments:
     tV = defaultdict(lambda: defaultdict(int))
@@ -135,8 +158,10 @@ def loadSentences(encorpus, forcorpus):
     pairs = []
     for engSentence, forSentence in itertools.izip(fen,ffor):
         #remove unnecessary characters
+
         #engSentence = re.sub('["#$%&()?!*+,./:;<=>\^{}~]', '', engSentence)
         #forSentence = re.sub('["#$%&()?!*+,./:;<=>\^{}~]', '', forSentence)
+
 
         engSentence = engSentence.split()
         engSentence.insert(0, 'NULL')
@@ -149,24 +174,41 @@ def loadSentences(encorpus, forcorpus):
 
 def main():
     test = False
+#    recompile = True
 
     if test:
        englishCorpus = "corpusmini.en"
        foreignCorpus = "corpusmini.nl"
        viterbi = "corpusmini_viterbi.txt"
+       viterbi2 = "corpusmini_viterbi_improv.txt"
        table = "corpusmini_table.txt"
+       table2 = "corpusmini_table_improv.txt"
     else:
        englishCorpus = "corpus_1000.en"
        foreignCorpus = "corpus_1000.nl"
        viterbi = "corpus_1000_viterbi.txt"
+       viterbi2 = "corpus_1000_viterbi_improv.txt"
        table = "corpus_1000_table.txt"
+       table2 = "corpus_1000_table_improv.txt"
 
     pairedSentences = loadSentences(englishCorpus,foreignCorpus)
-
     t = ibm1(pairedSentences)
-    tV = viterbiAlignment(pairedSentences, t, viterbi)
 
-    translationTable(t,tV, table)
+#     if recompile:
+#        t = ibm1(pairedSentences)
+#        with io.open('translationProbs.json', 'w', encoding = 'utf8') as f:
+#             json.dump(t, f)
+#     else:
+#        with io.open('translationProbs.json', encoding = 'utf8') as f:
+#            t = json.load(f)
+
+
+    tV1 = viterbiAlignment(pairedSentences, t, viterbi, False)
+    tV2 = viterbiAlignment(pairedSentences, t, viterbi2, True)
+
+    translationTable(t,tV1, table)
+    translationTable(t,tV2, table2)
+
 #    printBest(t)
 #    printBest(tV)
 

@@ -20,11 +20,11 @@ def determineAlignment(foreignSentence, englishSentence):
 def getGoldStandardAlignments(goldStandard):
     goldAlignments = []
     englishSentencesLength = []
-    
+
     alignmentInfo = ""
     foreignSentence = ""
     englishSentence = ""
-    
+
     i=0
     for line in goldStandard:
         line = line.replace("\n", "")
@@ -38,9 +38,9 @@ def getGoldStandardAlignments(goldStandard):
         if(i % 3 == 0):
             goldAlignment, noEngWords = determineAlignment(foreignSentence, englishSentence)
             goldAlignments.append(goldAlignment)
-            
+
             englishSentencesLength.append(noEngWords)
-            
+
             alignmentInfo = ""
             foreignSentence = ""
             englishSentence = ""
@@ -49,7 +49,7 @@ def getGoldStandardAlignments(goldStandard):
     for engLength in englishSentencesLength:
         f.write(str(engLength) + ",")
     f.close()
-        
+
     return goldAlignments
 
 def getViterbiAlignments(viterbiStandard):
@@ -62,14 +62,16 @@ def getViterbiAlignments(viterbiStandard):
             viterbiAlignments.append(alignment)
         i += 1
     return viterbiAlignments
-    
+
 def main():
     goldStandard = open("corpus_1000_gold", 'r')
-    viterbiStandard = open("corpus_1000_viterbi.txt", 'r')
+    viterbiStandard = open("corpus_1000_viterbi_improv.txt", 'r')
+    f1scores = "F1scores_improv.txt"
+
 
     goldStandardAlignments = getGoldStandardAlignments(goldStandard)
-    viterbiAlignments = getViterbiAlignments(viterbiStandard)    
-    
+    viterbiAlignments = getViterbiAlignments(viterbiStandard)
+
     if(len(goldStandardAlignments) == len(viterbiAlignments)):
         precisionValues = []
         recallValues = []
@@ -97,8 +99,8 @@ def main():
         for f1score in F1Scores:
             f.write(str(f1score) + ",")
         f.close()
-        
-            
+
+
 if __name__ == '__main__':
     main()
-    
+
