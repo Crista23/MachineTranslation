@@ -1,5 +1,7 @@
 from __future__ import division
 import copy, itertools, operator, re
+import json
+import io
 from collections import defaultdict
 
 def ibm1(sentencePairs):
@@ -65,7 +67,7 @@ def printBest(t):
     print sorted(t['the'].items(), key = lambda x: x[1],reverse=True)[0:10]
     print 'is'
     print sorted(t['is'].items(), key = lambda x: x[1],reverse=True)[0:10]
-    
+
 def translationTable(t,tV, output):
     f = open(output, 'w')
 
@@ -87,17 +89,20 @@ def translationTable(t,tV, output):
 
 def pAl(j,m,aj, improv):
     if not improv:
-       return 1 #epsilon / (l+1)^m
+       return 1/m
     else:
-       if m < 2:
-          return 1/2
-       else:
-          if aj == j:
-             return 1/3
-          if aj == 0:
-             return 1/3
-          else:
-             return (1/3)/m
+       distance = abs(aj - j)
+       return 1/(m+distance)
+#    else:
+#       if m < 2:
+#          return 1/2
+#       else:
+#          if aj == j:
+#             return 1/3
+#          if aj == 0:
+#             return 1/3
+#          else:
+#             return (1/3)/m
 
 
 def viterbiAlignment(sentencepairs, t, output, improv):
@@ -113,7 +118,10 @@ def viterbiAlignment(sentencepairs, t, output, improv):
             maxVal = 0.0
             choice = 0
             for aj in range(len(es)):
-                val = t[es[aj]][fs[j]]* pAl(j,len(fs),aj,improv)
+                try:
+                   val = t[es[aj]][fs[j]]* pAl(j,len(fs),aj,improv)
+                except:
+                   print 'problem',  es[aj], fs[j]
                 if val> maxVal:
                    maxVal = val
                    choice = aj
@@ -130,7 +138,7 @@ def viterbiAlignment(sentencepairs, t, output, improv):
         f.write(str(alignment)+'\n')
         # print es,fs, alignment
     f.close()
-    
+
     # Create the table of translation probabilities
     # from the Viterbi alignments:
     tV = defaultdict(lambda: defaultdict(int))
@@ -150,8 +158,10 @@ def loadSentences(encorpus, forcorpus):
     pairs = []
     for engSentence, forSentence in itertools.izip(fen,ffor):
         #remove unnecessary characters
+
         #engSentence = re.sub('["#$%&()?!*+,./:;<=>\^{}~]', '', engSentence)
         #forSentence = re.sub('["#$%&()?!*+,./:;<=>\^{}~]', '', forSentence)
+
 
         engSentence = engSentence.split()
         engSentence.insert(0, 'NULL')
@@ -164,6 +174,7 @@ def loadSentences(encorpus, forcorpus):
 
 def main():
     test = False
+#    recompile = True
 
     if test:
        englishCorpus = "corpusmini.en"
@@ -181,8 +192,17 @@ def main():
        table2 = "corpus_1000_table_improv.txt"
 
     pairedSentences = loadSentences(englishCorpus,foreignCorpus)
-
     t = ibm1(pairedSentences)
+
+#     if recompile:
+#        t = ibm1(pairedSentences)
+#        with io.open('translationProbs.json', 'w', encoding = 'utf8') as f:
+#             json.dump(t, f)
+#     else:
+#        with io.open('translationProbs.json', encoding = 'utf8') as f:
+#            t = json.load(f)
+
+
     tV1 = viterbiAlignment(pairedSentences, t, viterbi, False)
     tV2 = viterbiAlignment(pairedSentences, t, viterbi2, True)
 
