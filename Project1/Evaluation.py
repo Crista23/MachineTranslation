@@ -6,8 +6,6 @@ def determineAlignment(foreignSentence, englishSentence):
     foreignWords = foreignSentence.split(" ")
     englishWords =  englishSentence.replace("({ ", "").split(" }) ")
     englishWords = [word for word in englishWords if word != '']
-    #print "engWords"
-    #print englishWords
     for i in range(len(foreignWords)):
         index = i + 1
         for j in range(len(englishWords)):
@@ -77,10 +75,6 @@ def main():
         recallValues = []
         F1Scores= []
         for i in range(len(goldStandardAlignments)):
-            #print i
-            #print nltk.metrics.precision(set(goldStandardAlignments[i]), set(viterbiAlignments[i]))
-            #print nltk.metrics.recall(set(goldStandardAlignments[i]), set(viterbiAlignments[i]))
-            #print nltk.metrics.f_measure(set(goldStandardAlignments[i]), set(viterbiAlignments[i]))
             precision = nltk.metrics.precision(set(goldStandardAlignments[i]), set(viterbiAlignments[i]))
             recall = nltk.metrics.recall(set(goldStandardAlignments[i]), set(viterbiAlignments[i]))
             F1score = nltk.metrics.f_measure(set(goldStandardAlignments[i]), set(viterbiAlignments[i]))

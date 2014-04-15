@@ -57,30 +57,19 @@ def ibm1(sentencePairs):
                else:
                   print 'zero two'
                   del t[e][fs[i]]
-
-   #    printBest(t)
     return t
-
-def printBest(t):
-    print 'the'
-    print sorted(t['the'].items(), key = lambda x: x[1],reverse=True)[0:10]
-    print 'is'
-    print sorted(t['is'].items(), key = lambda x: x[1],reverse=True)[0:10]
 
 def translationTable(t,tV, output):
     f = open(output, 'w')
-
     words = ['NULL', 'the', 'in', '.', 'all','should', 'public']
     for word in words:
         topT = sorted(t[word].items(), key = lambda x: x[1],reverse=True)
-
         f.write('\n'+ word+'\tTrained:\tViterbi:\n')
         for i in range(10):
             f.write(str(topT[i][0]))
             f.write('\t'+ str(topT[i][1]))
             f.write('\t'+ str(tV[word][topT[i][0]]))
             f.write('\n')
-
     f.close()
 
 
@@ -142,12 +131,6 @@ def loadSentences(encorpus, forcorpus):
     ffor = open(forcorpus,'r')
     pairs = []
     for engSentence, forSentence in itertools.izip(fen,ffor):
-        #remove unnecessary characters
-
-        #engSentence = re.sub('["#$%&()?!*+,./:;<=>\^{}~]', '', engSentence)
-        #forSentence = re.sub('["#$%&()?!*+,./:;<=>\^{}~]', '', forSentence)
-
-
         engSentence = engSentence.split()
         engSentence.insert(0, 'NULL')
         forSentence = forSentence.split()
