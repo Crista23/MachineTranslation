@@ -40,7 +40,8 @@ We also came up with our own extension to the model, which we compare and evalua
 \end{abstract}
 
 \section{Introduction}
-Statistical alignment models are widely used nowadays in a variety of natural language processing applications, ranging from machine translation to question answering and information retrieval. The goal of finding the best English translation $\vec{e}$ of a foreign sentence $\vec{f}$ is modeled under the assumption of the \textit{noisy channel} hypothesis, which considers the foreign sentence as a ``corrupted" instance of the original English sentence. The English sentence which is at the source of its foreign counterpart is an unknown issue, and thus the task of translating $\vec{f}$ into $\vec{e}$ becomes one of maximizing the probability of the English sentence given the foreign sentence, $P(\vec{e}|\vec{f})$. According to Bayes' theorem, 
+%Statistical alignment models are widely used nowadays in a variety of natural language processing applications, ranging from machine translation to question answering and information retrieval. 
+The goal of finding the best English translation $\vec{e}$ of a foreign sentence $\vec{f}$ is modeled under the assumption of the \textit{noisy channel} hypothesis, which considers the foreign sentence as a ``corrupted" instance of the original English sentence. The English sentence which is at the source of its foreign counterpart is an unknown issue, and thus the task of translating $\vec{f}$ into $\vec{e}$ becomes one of maximizing the probability of the English sentence given the foreign sentence, $P(\vec{e}|\vec{f})$. According to Bayes' theorem, 
 
 \begin{equation}
 P(\vec{e}|\vec{f})= \frac{P(\vec{e})\cdot P(\vec{f}|\vec{e})}{P(\vec{f})}
@@ -55,8 +56,9 @@ where $P(\vec{e})$ denotes the language model, that takes care of the fluency of
  and $P(\vec{e}|\vec{f})$ denotes the translation model, that makes sure the translation is adequate. 
 
 In order to be able to approximate this probability, we need to make assumptions. In %cite IBM paper
-a series of increasingly complex models is presented. We implemented the first model, hereafter IBM model 1. 
-In what follows we present the this model in section \ref{IBM1}, together with the Expectation Maximization formula used for training this model. We came up with an improvement over this model, which we introduce in section \ref{Improvement}. Then comes an evaluation of the alignment quality for both models in section \ref{Eval} and finally we conclude in Section \ref{Concl}.
+a series of increasingly complex models is presented. We implemented the first model, hereafter IBM model~1. 
+
+In what follows we present the this model in section~\ref{IBM1}, together with the Expectation Maximization formula used for training this model. We came up with an improvement over this model, which we introduce in section~\ref{Improvement}. Then comes an evaluation of the alignment quality for both models in section~\ref{Eval} and finally we conclude in Section~\ref{Concl}.
 
 
 
@@ -67,35 +69,48 @@ In what follows we present the this model in section \ref{IBM1}, together with t
 The assumption underlying the IBM models is that translating text comes down to aligning the words 
 %IBM models focus on the translation task only which assumes that word alignments exist between the words 
 of the foreign and the English sentence, and translating the words independently.
-The words of the English sentence are called \textit{cepts} and generally within the IBM models \emph{groups} of cepts cannot be aligned to \emph{groups} of words in the foreign sentence.  Rather, each cept  is aligned to one foreign word or, in case there is no foreign correspondent, to the so called \textit{null} word.
-Because of this simplification, an alignment can be represented as a vector that has the same length as the English sentence.
+The words of the English sentence $\vec{e}$ are called \textit{cepts} and generally within the IBM models groups of  words in the foreign sentence $\vec{f}$ cannot be aligned to groups of cepts.  Rather, each foreign word  is aligned to one cept or, in case there is no English correspondent, to the so called \textit{null} word.
+Because of this simplification, an alignment can be represented as a vector $\vec{a}$ that has the same length as the foreign sentence: $m$.
 
-Hence the translation probability $P(\vec{f}|\vec{e})$ can be rewritten as the sum over all possible alignments $\vec{a}$ of conditional probabilities $P(\vec{f}, \vec{a}|\vec{e})$:
+The translation probability $P(\vec{f}|\vec{e})$ can be rewritten as the sum over all possible alignments $\vec{a}$ of conditional probabilities $P(\vec{f}, \vec{a}|\vec{e})$:
 \begin{align}
-P(\vec{f}|\vec{e}) =& \sum_\vec{a} P(\vec{f},\vec{a}|\vec{e})\\
-=&\sum_\vec{a}  P(\vec{f},\vec{a},m|\vec{e}) \\
-=&\sum_\vec{a}  P(m|\vec{e})\times P(\vec{f}|\vec{a},m,\vec{e})\\
+P(\vec{f}|\vec{e}) =& \sum_\vec{a} P(\vec{f},\vec{a}|\vec{e})\notag\\
+=&\sum_\vec{a}  P(\vec{f},\vec{a},m|\vec{e}) \notag\\
+=&\sum_\vec{a}  P(m|\vec{e})\times P(\vec{f}|\vec{a},m,\vec{e})\notag\\
 =&  P(m|\vec{e}) \sum_\vec{a} P(\vec{f}|\vec{a},m,\vec{e})\\
 P(\vec{f}|\vec{a},m,\vec{e})=&\prod_{j=1}^{m} P(a_j|a_1^{j-1}, f_1^{j-1}, m, \vec{e}) \notag \\
-& \times  P(f_j|a_1^j,f_1^{j-1},m,\vec{e})
+& \times  P(f_j|a_1^j,f_1^{j-1},m,\vec{e})\label{p(f|a,m,e)}
 \end{align}
 
 
 %IBM models build upon one another in increasing order of complexity. IBM Model 1 is the simplest probabilistic generative model based on lexical translation which assumes a word-to-word mapping between the target and the source sentence. It is widely used in working with parallel bilingual corpora, aligning syntactic fragments and estimating phrase translation probabilities.
 
-The translation probability of a foreign sentence $\vec{f}$ of length $l$ into an English sentence $\vec{e}$ of length $m$ that is aligned as $\vec{a}$ is defined as:
-
-\begin{equation}
-p(\vec{e},\vec{a}|\vec{f}) = \frac{\epsilon}{(l + 1)^m} \prod_{j=1}^{m}t(e_j|f(a_j))
-\end{equation}
+%The translation probability of a foreign sentence $\vec{f}$ of length $m$ into an English sentence $\vec{e}$ of length $l$ that is aligned as $\vec{a}$ is defined as:
+%\begin{equation}p(\vec{e},\vec{a}|\vec{f}) = \frac{\epsilon}{(l + 1)^m} \prod_{j=1}^{m}t(e_j|f(a_j))\end{equation}
 
 %Did the languages change position here? We were estimating p(f,a|e)
 
-\section{EM Training Formula}
-\label{EM}
-The parameters of IBM Model 1 for a given pair of languages are estimated using the EM algorithm. It takes as training data a corpus of paired sentences, each pair made up of a sentence in one language and its translation in the other language. Each target word is assumed to be generated by exactly one source word, including the \textit{null} word. The initial step of EM consists in setting uniform translation probabilities $t(e|f)$ over the target vocabulary. During the E-step the model is applied to the data and the alignment probabilities are computed; during the M-step counts over all possible alignments are collected and weighted by their probability. 
+\paragraph{EM Training}
+The input to the training is a corpus of paired sentences.
+To estimate the latent variables, alignments, a version of expectation maximization is used.
+Training focuses on the parameters in equation \ref{p(f|a,m,e)}. The first term, the alignment probability, is assumed to be uniform in IBM Model 1. The second term 
 
-+ training formula..
+ The initial step of EM consists in setting uniform translation probabilities $t(e|f)$ over the target vocabulary. 
+
+In the E-step, the alignment probabilities are computed. Note that this is done implicitly, in the process of gathering the fractional counts:
+\begin{align}
+c(f|e;\vec{f},\vec{e}) =& 
+\frac{t(f|e)}{t(f|e_0)+\ldots+t(f|e_l)} \notag\\
+&\times \sum_{j=1}^m \delta(f,f_j) \sum_{i=0}^l \delta(e,e_i)
+\end{align}
+
+The translation probabilities are re-estimated in the M-Step, using the obtained counts:
+\begin{align}
+t(f|e) = \lambda_e^{-1} \sum_{s=1}^S c(f|e;\vec{f}^{(s)},\vec{e}^{(s)})\\ 
+\lambda_e = \sum_f\sum_{s=1}^S c(f|e;\vec{f}^{(s)},\vec{e}^{(s)}) \label{normalization}
+\end{align}
+Where equation \ref{normalization} ($\lambda_e$) defines the normalization parameter to get proper probabilities.
+
 
 \section{Improvement Over IBM Model 1}
 \label{Improvement}
