@@ -41,7 +41,6 @@ def ibm1(sentencePairs):
            for i in range(len(fs)):
                if sTotal[i] > 0.0:
                   for e in es:
-           #           print t[e][fs[i]], totals[i]
                       counts[e][fs[i]] += t[e][fs[i]] / sTotal[i]
                       total[e] += t[e][fs[i]]/sTotal[i]
                else:
@@ -80,8 +79,6 @@ def translationTable(t,tV, output):
             f.write(str(topT[i][0]))
             f.write('\t'+ str(topT[i][1]))
             f.write('\t'+ str(tV[word][topT[i][0]]))
-#            f.write(str(topT[i])+'\t'+str(topTV[i])+'\n')
-
             f.write('\n')
 
     f.close()
@@ -93,17 +90,6 @@ def pAl(j,m,aj, improv):
     else:
        distance = abs(aj - j)
        return 1/(m+distance)
-#    else:
-#       if m < 2:
-#          return 1/2
-#       else:
-#          if aj == j:
-#             return 1/3
-#          if aj == 0:
-#             return 1/3
-#          else:
-#             return (1/3)/m
-
 
 def viterbiAlignment(sentencepairs, t, output, improv):
     counts = defaultdict(lambda: defaultdict(int))
@@ -136,7 +122,6 @@ def viterbiAlignment(sentencepairs, t, output, improv):
                 ' score ' +str(score)
                 +'\n')
         f.write(str(alignment)+'\n')
-        # print es,fs, alignment
     f.close()
 
     # Create the table of translation probabilities
@@ -174,7 +159,6 @@ def loadSentences(encorpus, forcorpus):
 
 def main():
     test = False
-#    recompile = True
 
     if test:
        englishCorpus = "corpusmini.en"
@@ -194,23 +178,11 @@ def main():
     pairedSentences = loadSentences(englishCorpus,foreignCorpus)
     t = ibm1(pairedSentences)
 
-#     if recompile:
-#        t = ibm1(pairedSentences)
-#        with io.open('translationProbs.json', 'w', encoding = 'utf8') as f:
-#             json.dump(t, f)
-#     else:
-#        with io.open('translationProbs.json', encoding = 'utf8') as f:
-#            t = json.load(f)
-
-
     tV1 = viterbiAlignment(pairedSentences, t, viterbi, False)
     tV2 = viterbiAlignment(pairedSentences, t, viterbi2, True)
 
     translationTable(t,tV1, table)
     translationTable(t,tV2, table2)
-
-#    printBest(t)
-#    printBest(tV)
 
 if __name__ == '__main__':
     main()
