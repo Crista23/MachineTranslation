@@ -90,6 +90,15 @@ def getPhrase(start,end,sentence):
         phrase+=sentence[i]+" "
     return phrase[0:-1]
 
+# sentence looks like 0-0 1-0 1-1 3-2 2-3 5-4 6-5 7-5 6-6 8-7 9-8
+def getWordAlignments(sentence):
+    A = set()
+    sentence = sentence.split(" ")
+    for alignment in sentence:
+        e_pos, f_pos = alignment.split("-")
+        A.add((int(e_pos), int(f_pos)))
+    return list(A)
+        
 
 A = [(0,0),(1,0),(1,1),(3,2),(2,3),(5,4),(6,5),(7,5),(6,6),(8,7),(9,8)]
 e = ['finally',',','there','is','the','lack','of','transparency','.']
