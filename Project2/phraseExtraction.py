@@ -36,10 +36,10 @@ def extractPairs(e,f,A,size):
             print 'Foreign window:', f_s,f_e
             # Extract the phrase pairs in this window
             # and add them to the set of phrase pairs
-            BP = BP.union(extractHelper(f_s,f_e,e_s,e_e,f,e,size))
+            BP = BP.union(extractHelper(f_s,f_e,e_s,e_e,f,e,size, A))
     return BP
 
-def extractHelper(f_s, f_e, e_s, e_e, f, e, size):
+def extractHelper(f_s, f_e, e_s, e_e, f, e, size, A):
     E = set()
     fPrev = -1
     fNext = len(f)
@@ -99,11 +99,35 @@ def getWordAlignments(sentence):
         A.add((int(e_pos), int(f_pos)))
     return list(A)
         
+def main():
+    fen = list(open("data/training/p2_training.en",'r'))
+    ffor = list(open("data/training/p2_training.nl",'r'))
+    falignments = list(open("data/training/p2_training_symal.nlen",'r'))
 
-A = [(0,0),(1,0),(1,1),(3,2),(2,3),(5,4),(6,5),(7,5),(6,6),(8,7),(9,8)]
-e = ['finally',',','there','is','the','lack','of','transparency','.']
-f = ['tot','slot','is','er','nog','het','gebrek','aan','transparantie','.']
-BP = extractPairs(e,f,A,4)
-print len(BP)#, BP
-for (english, foreign) in BP:
-    print english, ' ==> ', foreign
+    if (len(fen) != len(ffor) or len(fen) != len(falignments) or len(ffor) != len(falignments)):
+        print "File length missmatch!"
+        return
+    
+    for i in range(len(fen)):
+        A = getWordAlignments(falignments[i])
+        e = ffor[i].replace("\n", "").split(" ")
+        f = ffor[i].replace("\n", "").split(" ")
+        BP = extractPairs(e,f,A,4)
+        print len(BP)#, BP
+        for (english, foreign) in BP:
+            print english, ' ==> ', foreign
+        #might be too many prints, so for now stop after the first iteration
+        break
+        
+    """
+    A = [(0,0),(1,0),(1,1),(3,2),(2,3),(5,4),(6,5),(7,5),(6,6),(8,7),(9,8)]
+    e = ['finally',',','there','is','the','lack','of','transparency','.']
+    f = ['tot','slot','is','er','nog','het','gebrek','aan','transparantie','.']
+    BP = extractPairs(e,f,A,4)
+    print len(BP)#, BP
+    for (english, foreign) in BP:
+        print english, ' ==> ', foreign
+    """
+
+if __name__ == '__main__':
+    main()
