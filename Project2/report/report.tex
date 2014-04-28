@@ -68,7 +68,9 @@ We iterate over all windows up to a certain length in the English sentence, and 
 \paragraph{Joint Probability Estimates}
 In \cite{marcu2002} quite a different approach is taken to phrase based translation. The idea of a noisy channel, that a foreign sentence is a corrupted version of an original English sentence, is abandoned. Rather, the two sentences are considered different substantiation of a bag of concepts. In this framework, the probability of a phrase pair is a joint probability conditioned on a concept. In practice, we do not explicitly model the concept but view the phrase pair itself as a concept, so its weight is just the joint translation probability of the two phrases: $t(\bar{e},\bar{f}$.
 
-The estimation of the translation probabilities in \cite{marcu} is done in an adapted version of expectation maximization. In the first step, high-frequency n-grams are determined in the bilingual corpus 
+The estimation of the translation probabilities in \cite{marcu} is done in an adapted version of expectation maximization. In the first step, high-frequency n-grams are determined in the bilingual corpus. The translation probabilities are initially estimated based on the length of the both phrases and the sentences in which they occur. Subsequently, fractional counts are collected based on the initial estimates.
+
+In our implementation, we do not consider all alignments of all possible phrases, but instead base the extraction of phrases on the symmetrized word alignments from IBM models. Therefore, we can st
 
 
 
