@@ -1,0 +1,110 @@
+\documentclass[11pt]{article}
+\usepackage{acl2014}
+\usepackage{times}
+\usepackage{url}
+\usepackage{graphicx}
+%\usepackage{latexsym}
+
+
+%figures:
+\usepackage{tikz}
+\usetikzlibrary{trees,positioning,backgrounds}
+%\usepackage{tikz-qtree}
+\usepackage{subcaption}
+
+%references and keeping floats in place
+\usepackage[pdftex,pdfborder={0 0 0},unicode,breaklinks,hyperfootnotes=false,bookmarks]{hyperref}
+\usepackage[section]{placeins}
+
+\usepackage{amsmath} 
+\renewcommand{\vec}[1]{\mathbf{#1}}
+
+\title{Statistical Structure in Language Processing \\ Phrase based models}
+\author{ Cristina G\^arbacea\\
+  10407936 \\
+  {\small \tt cr1st1na.garbacea@gmail.com} 
+  \\\And
+  Sara Veldhoen \\
+10545298   \\
+  {\small \tt sara.veldhoen@student.uva.nl} \\}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Bla bla bla
+\end{abstract}
+
+\section{Introduction}
+
+
+
+\section{Phrase Extraction and weight estimation}
+\label{phraseExtraction}
+
+In this section, we present our approach to the extraction of phrase pairs from the corpus. Subsequently, we 
+
+\paragraph{Phrase Extraction}
+The number of possible phrase pairs per sentence pair is huge: each sentence can be partitioned in a vast amount of ways, and each partition could form a phrase pair with any partition in the paired sentence. 
+
+In order to reduce the space, we consider only phrase pairs that are consistent with the alignments produced by IBM models.
+As in \cite{Koehn:2010}, consistency is defined as follows:
+\begin{align*}
+\langle \bar{e},\bar{f}\rangle\text{ is consistent with }A &\Leftrightarrow\\
+\forall e_i\in \bar{e}: &\langle e_i,f_j\rangle \in A \Rightarrow f_j \in \bar{f}, \\
+\text{ and }\forall f_j\in \bar{f}: &\langle e_i,f_j\rangle \in A \Rightarrow e_i \in \bar{e}, \\
+\text{ and }\exists e_i \in \bar{e}, f_j\in \bar{f}: &\langle e_i,f_j\rangle \in A.\\
+\end{align*}
+
+For this assignment, the symmetrized alignments of the corpus sentences were given. 
+We base our extraction algorithm on the one presented in \cite[page 133]{Koehn:2010}.
+We iterate over all windows up to a certain length in the English sentence, and find the foreign windows that are consistent given the alignment. For all valid pairs of windows, we extract the corresponding phrase pair.
+
+\paragraph{Conditional Probability Estimates}
+
+\paragraph{Joint Probability Estimates}
+In \cite{marcu2002} quite a different approach is taken to phrase based translation. The idea of a noisy channel, that a foreign sentence is a corrupted version of an original English sentence, is abandoned. Rather, the two sentences are considered different substantiation of a bag of concepts. In this framework, the probability of a phrase pair is a joint probability conditioned on a concept. In practice, we do not explicitly model the concept but view the phrase pair itself as a concept, so its weight is just the joint translation probability of the two phrases: $t(\bar{e},\bar{f}$.
+
+The estimation of the translation probabilities in \cite{marcu} is done in an adapted version of expectation maximization. In the first step, high-frequency n-grams are determined in the bilingual corpus 
+
+
+
+\section{Experiments and Results}
+\label{Eval}
+
+\section{Conclusion}
+\label{Concl}
+
+\begin{thebibliography}{}
+%\bibitem[\protect\citename{Gusfield}1997]{Gusfield:97}
+%Dan Gusfield.
+%\newblock 1997.
+%\newblock {\em Algorithms on Strings, Trees and Sequences}.
+%\newblock Cambridge University Press, Cambridge, UK.
+
+\bibitem[1]{Koehn:2010}
+Philipp Koehn,
+\newblock 2010.
+\newblock {\em Statistical Machine Translation}.
+\newblock Cambridge University Press.
+
+\bibitem[2]{marcu2002}
+{Daniel Marcu and William Wong},
+\newblock 2002.
+\newblock {\em A phrase-based, joint probability model for statistical machine translation}.
+\newblock {Association for Computational Linguistics}.
+%@inproceedings{marcu2002phrase,
+%  title={A phrase-based, joint probability model for statistical machine translation},
+%  author={Marcu, Daniel and Wong, William},
+%  booktitle={Proceedings of the ACL-02 conference on Empirical methods in natural language processing-Volume 10},
+%  pages={133--139},
+%  year={2002},
+%  organization={Association for Computational Linguistics}
+%}
+
+\end{thebibliography}
+
+\end{document}
