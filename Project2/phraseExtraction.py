@@ -110,7 +110,7 @@ def main():
     
     for i in range(len(fen)):
         A = getWordAlignments(falignments[i])
-        e = ffor[i].replace("\n", "").split(" ")
+        e = fen[i].replace("\n", "").split(" ")
         f = ffor[i].replace("\n", "").split(" ")
         BP = extractPairs(e,f,A,4)
         print len(BP)#, BP
