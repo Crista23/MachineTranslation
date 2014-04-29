@@ -56,6 +56,7 @@ def extractHelper(f_s, f_e, e_s, e_e, f, e, size, A):
     fs = f_s
 
     # Widen the foreign window until you hit the previous/ next foreign alignment point: fPrev or fNext
+    foreignDict = defaultdict(int)
     while fs > fPrev: # until fs aligned
         fe = f_e
         while fe < fNext: # until fe aligned
@@ -64,9 +65,27 @@ def extractHelper(f_s, f_e, e_s, e_e, f, e, size, A):
             if fe-fs < size:
                 #E.add((getPhrase(e_s,e_e,e),getPhrase(fs,fe,f)))
                 BP[(getPhrase(e_s,e_e,e),getPhrase(fs,fe,f))] += 1
+                foreignDict[getPhrase(fs,fe,f)] += 1
             fe +=1
         fs -= 1
+    
+    engPhrases[getPhrase(e_s, e_e, e)] = foreignDict
+    print "dictionary"
+    print engPhrases
     return #E
+
+def getDecodingDict(engPhrases):
+    fPhrases = {}
+    for engPhrase in engPhrases:
+        print "engPhrase: "
+        print engPhrase
+        print "dict of foreign phrases: "
+        print engPhrases[engPhrase]
+        for fPhrase in engPhrases[engPhrase]:
+            fPhrases[fPhrase] = {engPhrase : getConditionalTranslationProbabilities(BP, (engPhrase, fPhrase))} 
+    print "final value"
+    print fPhrases
+    return fPhrases
 
 def getPhrase(start,end,sentence):
 # Extract the words in the window start ... end
@@ -103,8 +122,6 @@ def readFiles(enFile,forFile,alignFile):
     else:
         return enSen, forSen, alignments
 
-BP = defaultdict(int)
-
 def getConditionalTranslationProbabilities(BP, phrasePair):
     engPhrase = phrasePair[0]
     forPhrase = phrasePair[1]
@@ -120,7 +137,11 @@ def getConditionalTranslationProbabilities(BP, phrasePair):
         return phrasePairCount / sumEngPhraseOccurences
     return 0     
 
+BP = defaultdict(int)
+engPhrases = {}
+
 def main():
+    
     enFile = "data/training/p2_training.en"
     forFile = "data/training/p2_training.nl"
     alignFile = "data/training/p2_training_symal.nlen"
@@ -137,13 +158,14 @@ def main():
 #         f = ffor[i].replace("\n", "").split(" ")
 #         BP = extractPairs(e,f,A,4)
         print len(BP)#, BP
-        
+        print len(engPhrases)
+        getDecodingDict(engPhrases)
         #might be too many prints, so for now stop after the first iteration
      #   break
     for (english, foreign),count in BP.iteritems():
         print english, ' ==> ', foreign,'\t\t|| ', count
         print "conditional probability: " + str(getConditionalTranslationProbabilities(BP, (english, foreign)))
-
+    
     """
     A = [(0,0),(1,0),(1,1),(3,2),(2,3),(5,4),(6,5),(7,5),(6,6),(8,7),(9,8)]
     e = ['finally',',','there','is','the','lack','of','transparency','.']
