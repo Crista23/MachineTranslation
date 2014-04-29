@@ -1,3 +1,4 @@
+from __future__ import division
 from collections import defaultdict
 
 # Extract phrases of maximum length size
@@ -6,67 +7,55 @@ def extractPairs(e,f,A,size):
     BP = set()
     if size <1:
        size = len(e)
-    # - Establish an English window e_s...e_e
-    #   with max length = size
+    # - Establish an English window e_s...e_e with max length = size
     for e_s in range(len(e)):
         for e_e in range(e_s,min(e_s+size,len(e))):
-#        for e_e in range(e_s+1,min(e_s+size,len(e))): ,if we don't want phrases of length 1
-#            print 'English window:',e_s,e_e
-            #Find a corresponding foreign window f_s...f_e
-            # initialize f_s and f_e the extreme values
+        #for e_e in range(e_s+1,min(e_s+size,len(e))): ,if we don't want phrases of length 1
+            #Find a corresponding foreign window f_s...f_e; initialize f_s and f_e the extreme values
             f_s = len(f)
             f_e = 0
-            # - Check for each alignment point
-            #   whether is is in the English window
-            # - Use the f-coordinate as f_s or f_e
-            #   if it is smaller resp. larger
-            #   than the value so far
+            # - Check for each alignment point whether is is in the English window
+            # - Use the f-coordinate as f_s or f_e if it is smaller resp. larger than the value so far
             for (f_a,e_a) in A:
                 if e_s <= e_a and e_a <= e_e:
                     f_s = min(f_a, f_s)
                     f_e = max(f_a, f_e)
-#            print 'Foreign window:', f_s,f_e
-            # Extract the phrase pairs in this window
-            # and add them to the set of phrase pairs
-#            BP = BP.union(extractHelper(f_s,f_e,e_s,e_e,f,e,size, A))
+            # print 'Foreign window:', f_s,f_e
+            # Extract the phrase pairs in this window and add them to the set of phrase pairs
+            # BP = BP.union(extractHelper(f_s,f_e,e_s,e_e,f,e,size, A))
             extractHelper(f_s,f_e,e_s,e_e,f,e,size, A)
 #    return BP
-# Given the English and foreign window,
-# check for consistency
-# extend the foreign window as much as possible
-# and extract the phrases
+
+# Given the English and foreign window, check for consistency, 
+# extend the foreign window as much as possible and extract the phrases
 def extractHelper(f_s, f_e, e_s, e_e, f, e, size, A):
-#    E = set()
+    #E = set()
     global BP
     fPrev = -1
     fNext = len(f)
     
-    # If the English window was empty on the French side,
-    # return an empty set
+    # If the English window was empty on the French side, return an empty set
     if f_e < f_s:
     # if f_e == 0, if we don't want phrases of length 1
         return #E
-#        print 'not a sensible French window'
-
+        # print 'not a sensible French window'
 
     for (f_a,e_a) in A:
         #Inconsistent: outside of the english window
         #              but inside the foreign window
         if (e_a < e_s or e_a > e_e) and (f_a >= f_s and f_a <= f_e):
-#           print 'Not consistent'
-           return #E
+            return #E
+            # print 'Not consistent'
         else:
-        # Keep track of the right/left most foreign word
-        # before resp. after the foreign window
+        # Keep track of the right/left most foreign word before resp. after the foreign window
            if f_a < f_s:
               fPrev = max(f_a,fPrev)
            if f_a > f_e:
               fNext = min(f_a,fNext)
-#    print 'Consistent'
+    # print 'Consistent'
     fs = f_s
 
-    # Widen the foreign window until you hit 
-    # the previous/ next foreign alignment point: fPrev or fNext
+    # Widen the foreign window until you hit the previous/ next foreign alignment point: fPrev or fNext
     while fs > fPrev: # until fs aligned
         fe = f_e
         while fe < fNext: # until fe aligned
@@ -116,15 +105,22 @@ def readFiles(enFile,forFile,alignFile):
 
 BP = defaultdict(int)
 
+def getConditionalTranslationProbabilities(BP, phrasePair):
+    engPhrase = phrasePair[0]
+    forPhrase = phrasePair[1]
+    phrasePairCount = 0
+    sumEngPhraseOccurences = 0
+    for (english, foreign), count in BP.iteritems():
+        if (english == engPhrase):
+            if (foreign == forPhrase):
+                phrasePairCount = count
+            else:
+                sumEngPhraseOccurences += count
+    if(sumEngPhraseOccurences != 0):
+        return phrasePairCount / sumEngPhraseOccurences
+    return 0     
 
 def main():
-#     fen = list(open("data/training/p2_training.en",'r'))
-#     ffor = list(open("data/training/p2_training.nl",'r'))
-#     falignments = list(open("data/training/p2_training_symal.nlen",'r'))
-# 
-#     if (len(fen) != len(ffor) or len(fen) != len(falignments) or len(ffor) != len(falignments)):
-#         print "File length missmatch!"
-#         return
     enFile = "data/training/p2_training.en"
     forFile = "data/training/p2_training.nl"
     alignFile = "data/training/p2_training_symal.nlen"
@@ -146,6 +142,7 @@ def main():
      #   break
     for (english, foreign),count in BP.iteritems():
         print english, ' ==> ', foreign,'\t\t|| ', count
+        print "conditional probability: " + str(getConditionalTranslationProbabilities(BP, (english, foreign)))
 
     """
     A = [(0,0),(1,0),(1,1),(3,2),(2,3),(5,4),(6,5),(7,5),(6,6),(8,7),(9,8)]
