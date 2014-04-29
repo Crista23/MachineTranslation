@@ -114,8 +114,8 @@ def getConditionalTranslationProbabilities(BP, phrasePair):
         if (english == engPhrase):
             if (foreign == forPhrase):
                 phrasePairCount = count
-            else:
-                sumEngPhraseOccurences += count
+            sumEngPhraseOccurences += count
+    
     if(sumEngPhraseOccurences != 0):
         return phrasePairCount / sumEngPhraseOccurences
     return 0     
