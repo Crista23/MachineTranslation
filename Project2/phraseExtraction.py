@@ -142,7 +142,7 @@ def main():
     
 #    BP = set()
 
-    for i in range(20):
+    for i in range(4):
 #    for i in range(len(enSen)):
 #        BP = BP.union(extractPairs(enSen[i],forSen[i],alignments[i],4))
         extractPairs(enSen[i],forSen[i],alignments[i],4)
@@ -150,21 +150,27 @@ def main():
 #         e = fen[i].replace("\n", "").split(" ")
 #         f = ffor[i].replace("\n", "").split(" ")
 #         BP = extractPairs(e,f,A,4)
-        print len(BP)#, BP
-        print len(engPhrases)
-        print "dictionary"
-        print engPhrases
+        #print len(BP)#, BP
+        #print len(engPhrases)
+        #print "dictionary"
+        #print engPhrases
 
     
         #might be too many prints, so for now stop after the first iteration
      #   break
+    """
     for (english, foreign),count in BP.iteritems():
         print english, ' ==> ', foreign,'\t\t|| ', count
         print "conditional probability: " + str(getConditionalTranslationProbabilities(BP, (english, foreign)))
-
-    a = getDecodingDict(engPhrases)
-    print len(a)
-    print a
+    """
+    
+    for engPhrase, forDict in engPhrases.iteritems():
+        print "key", engPhrase
+        for forPhrase, count in forDict.iteritems():
+            print "\t", forPhrase, count
+    #a = getDecodingDict(engPhrases)
+    #print len(a)
+    #print a
     """
     A = [(0,0),(1,0),(1,1),(3,2),(2,3),(5,4),(6,5),(7,5),(6,6),(8,7),(9,8)]
     e = ['finally',',','there','is','the','lack','of','transparency','.']
