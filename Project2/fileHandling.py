@@ -45,7 +45,7 @@ def readFiles(enFile,forFile,alignFile):
 
 def fileToPhrases(enFile, forFile, alignFile):
     print "Extracting phrase pairs..."
-    enSen, forSen, alignments = readFiles(enFile,forFile,alignFile)
+    enSen, forSen, gialignments = readFiles(enFile,forFile,alignFile)
     engPhrases = defaultdict(lambda: defaultdict(int))
     n = 0
     for i in range(min(len(enSen),250)):
