@@ -39,7 +39,9 @@ Bla bla bla
 \end{abstract}
 
 \section{Introduction}
+In this paper we explore the utility of phrase based models inside a statistical machine translation system. As compared to our previous assignment where we only used word aligned models, in this assignment our goal is to build an efficient phrase pair extraction tool that would extract phrase pairs of up to length 4 from an aligned given parallel training corpus. 
 
+Since word based models translate words as atomic units, many statistical translation systems based on one-to-one correspondences between source and target words fall short of capturing dependencies between groups of words. This assumption is further restricted in cases where each source word is aligned to exactly one target word, as in IBM Model 1. Given this incapacity to capture context around a word and word order in general, phrase based models can overcome this limitation by treating phrases as atomic translation units and making use of local context in the translation process.
 
 
 \section{Phrase Extraction and weight estimation}
@@ -64,6 +66,14 @@ We base our extraction algorithm on the one presented in \cite[page 133]{Koehn:2
 We iterate over all windows up to a certain length in the English sentence, and find the foreign windows that are consistent given the alignment. For all valid pairs of windows, we extract the corresponding phrase pair.
 
 \paragraph{Conditional Probability Estimates}
+After having extracted the phrase pairs, we compute the conditional translation probability estimates for a foreign phrase $\overline{f}$ given an English phrase $\overline{e}$, using the following formula:
+
+\begin{align*}
+\phi(\overline{f}|\overline{e}) = \frac{count(\overline{e}, \overline{f})}{\sum_{\overline{f}_i} count(\overline{e},\overline{f}_i)}
+\end{align*}
+
+Here $count(\overline{e}, \overline{f})$ denotes in how many sentence pairs a specific phrase occurs and is extracted. To get relative frequency estimates, we normalize this value by the count of occurences of all phrase pairs containg the English phrase $\overline{e}$ inside the whole corpus.
+
 
 \paragraph{Joint Probability Estimates}
 In \cite{marcu2002} quite a different approach is taken to phrase based translation. The idea of a noisy channel, that a foreign sentence is a corrupted version of an original English sentence, is abandoned. Rather, the two sentences are considered different substantiation of a bag of concepts. In this framework, the probability of a phrase pair is a joint probability conditioned on a concept. In practice, we do not explicitly model the concept but view the phrase pair itself as a concept, so its weight is just the joint translation probability of the two phrases: $t(\bar{e},\bar{f}$.
@@ -73,6 +83,9 @@ The estimation of the translation probabilities in \cite{marcu} is done in an ad
 In our implementation, we do not consider all alignments of all possible phrases, but instead base the extraction of phrases on the symmetrized word alignments from IBM models. Therefore, we can st
 
 
+\section{Moses}
+
+\section{Bleu}
 
 \section{Experiments and Results}
 \label{Eval}
@@ -106,6 +119,12 @@ Philipp Koehn,
 %  year={2002},
 %  organization={Association for Computational Linguistics}
 %}
+
+\bibitem[3]{och1999}
+{Franz Josef Och, Christoph Tillmann, and Hermann Ney},
+\newblock 1999.
+\newblock {\em Improved alignment models for statistical machine translation}
+\newblock {Proceedinfs of the Joint SIGDAT Conf. on Empirical Methods in Natural Language Processing and Very Large Corpora}.
 
 \end{thebibliography}
 
