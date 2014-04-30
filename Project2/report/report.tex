@@ -41,8 +41,9 @@ Bla bla bla
 \section{Introduction}
 In this paper we explore the utility of phrase based models inside a statistical machine translation system. As compared to our previous assignment where we only used word aligned models, in this assignment our goal is to build an efficient phrase pair extraction tool that would extract phrase pairs of up to length 4 from an aligned given parallel training corpus. 
 
-Since word based models translate words as atomic units, many statistical machine translation systems based on one-to-one correspondences between source and target words fall short of capturing dependencies between groups of words. This assumption is further restricted in cases where each source word is aligned to exactly one target word. Given this incapacity to capture context around a word and word order in general, phrase based models can overcome this limitation by treating phrases as atomic translation units and making use of local context in the translation process.
+Since word based models translate words as atomic units, many statistical machine translation systems based on one-to-one correspondences between source and target words fall short of capturing dependencies between groups of words. This assumption is further restricted in cases where each source word is aligned to exactly one target word. Given this incapacity to capture context around a word and word order in general, phrase based models can overcome this limitation by treating phrases as atomic translation units and making use of local context in the translation process. Phrase based translation models give improved translations over the IBM models by allowing lexical entries with more than one word on the source-language and target-language side and are capable of giving state-of-the-art translations for many pairs of languages.
 
+In what follows we present the phrase extraction algorithm we implemented and offer an insight into how to get joint and conditional probability estimates in Section \ref{phraseExtraction}, in Section \ref{Moses} we present Moses, a statistical machine translation system that allows for automatically training translation models for any language pair, in Section \ref{Bleu} we give a brief overview of how we evaluated our system, in Section \ref{Eval} we present the results we obtained and finally we conclude in Section \ref{Concl}.
 
 \section{Phrase Extraction and weight estimation}
 \label{phraseExtraction}
@@ -84,11 +85,14 @@ In our implementation, we do not consider all alignments of all possible phrases
 
 
 \section{Moses}
+\label{Moses}
 
 \section{Bleu}
+\label{Bleu}
 
 \section{Experiments and Results}
 \label{Eval}
+%Do not forget to mention that there is a tendency to build prases which contain punctuation marks in the end and explain why this happens !!
 
 \section{Conclusion}
 \label{Concl}
