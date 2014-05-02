@@ -48,8 +48,8 @@ def fileToPhrases(enFile, forFile, alignFile):
     enSen, forSen, alignments = readFiles(enFile,forFile,alignFile)
     engPhrases = defaultdict(lambda: defaultdict(int))
     n = 0
-#    for i in range(min(len(enSen),250)):
-    for i in range(len(enSen)):
+    for i in range(min(len(enSen),2)):
+#    for i in range(len(enSen)):
         if i%500 == 0:
            print i
         engPhrases, ni = extractPairs(enSen[i],forSen[i],alignments[i],4, engPhrases)
