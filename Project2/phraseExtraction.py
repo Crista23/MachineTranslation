@@ -43,7 +43,7 @@ Param:  e_s        - the left index of the engish window
         A          - the alignments (a list of alignment points (e,f))
         size       - the maximum phrase length (int, -1 for no limit)
         engPhrases - the dictionary to updates
-Return: engPhrases - the updated dictionaries
+Return: engPhrases - the updated dictionary
         count      - the number of phrases encountered
 """
 def extractHelper(e_s, e_e, f_s, f_e, e, f, size, A, engPhrases):

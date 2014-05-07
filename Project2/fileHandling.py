@@ -42,17 +42,23 @@ def readFiles(enFile,forFile,alignFile):
         print "Done: ",len(enSen), "lines per file"
         return enSen, forSen, alignments
 
-
+"""
+Extract phrases from a triplet of files
+Param:  enFile     - the file with English sentences
+        forFile    - the file with foreign sentences
+        alignFil   - the file with (symmetrized) alignments
+Return: engPhrasees- a dictionary EN-FOR with counts
+        n          - the total number of encounters of phrase pairs
+"""
 def fileToPhrases(enFile, forFile, alignFile):
     print "Extracting phrase pairs..."
+    size = 4 # maximum length of a phrase
     enSen, forSen, alignments = readFiles(enFile,forFile,alignFile)
     engPhrases = defaultdict(lambda: defaultdict(int))
     n = 0
-    for i in range(min(len(enSen),2)):
-#    for i in range(len(enSen)):
-        if i%500 == 0:
-           print i
-        engPhrases, ni = extractPairs(enSen[i],forSen[i],alignments[i],4, engPhrases)
+#    for i in range(min(len(enSen),50)):              #debugging scenario
+    for i in range(len(enSen)):
+        engPhrases, ni = extractPairs(enSen[i],forSen[i],alignments[i],size, engPhrases)
         n += ni
     print "Done"
     return engPhrases, n
