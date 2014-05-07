@@ -56,7 +56,7 @@ As outlined in \cite{moses}, phrase based statistical machine translation has em
 
 The training pipeline and the decoder are the main components of the system. Parallel data is fed as input to the training process (typically preprocessed beforehand by ignoring long sentences and removing misaligned sentence pairs) and the translation correspondences between the two languages are inferred by determining word co-occurences. The training procedure is split into 9 distinct steps: after preparing the data, word alignments are taken from the intersection of bidirectional rules of \textit{Giza++} and some alignment points from the union of the two runs, based on a number of heuristics. In this manner it is possible to estimate the maximum likelihood translation table useful for phrase extraction. The extracted phrases are then scored by collecting counts and computing the phrase translation probabilities $\phi(e|f)$ for each foreign phrase $f$. A reordering model based on distance and a generation model built from the target side of the parallel corpus are both included in the final configuration file which is generated last and needed for decoding.
 
-Given a trained translation model and a source sentence, the decoder will translate the source sentence into the target language by finding the highest scoring sentence in the target language which matches the source sentence. The resulting translations are evaluated by using the \textit{BLEU} metric to assess how close is the machine translation to the professional human translation. Scores are calculated for each sentence and then averaged over the whole corpus, which basically means that the more reference translations per sentence, the higher the score will be (its value ranges from 0 to 1). On the other way round, instead of attempting to find the exact human judgment for every sentence, averaging individual sentence judgment errors over a test corpus confers reliability to this metric and make it correlate highly with human judgments.
+Given a trained translation model and a source sentence, the decoder will translate the source sentence into the target language by finding the highest scoring sentence in the target language which matches the source sentence. The resulting translations are evaluated by using the \textit{BLEU} metric to assess how close is the machine translation to the professional human translation. Scores are calculated for each sentence and then averaged over the whole corpus, which basically means that the more reference translations per sentence, the higher the score will be. On the other way round, instead of attempting to find the exact human judgment for every sentence, averaging individual sentence judgment errors over a test corpus confers reliability to this metric and make it correlate highly with human judgments.
 
 
 \section{Phrase Extraction and weight estimation}
@@ -124,6 +124,31 @@ The training data consisted of 100,000 parallel sentences, the held-out corpus h
 We analyzed which phrase pairs would be built. We observed that the vast majority consisted of phrases with punctuation. Naturally, punctuation is often aligned in the symmetrized word alignments. The phrase extraction algorithm behaves greedily, in that it adds as much as possible to a consistent phrase pair, including punctuation. Although sequences of word can often contribute to meaningful phrase pairs, adding punctuation mainly appears to introduce a lot of data sparsity. 
 
 %Do not forget to mention that there is a tendency to build prases which contain punctuation marks in the end and explain why this happens !!
+
+\paragraph{Test set results}
+Using the data provided to us for training consisting of 100K Dutch-English bilingual sentences, we used the \textit{Moses} implementation to train a traslation system. Word-alignments were obtained by running \textit{MGiza++}, since it supports multithreading which speeds up the alignment process. Phrase extraction and scoring, lexicalized reordering tables and the \textit{Moses} configuration file were created automatically by running the \verb|train-model.perl| script. After the training process completed, we tested the decoder on the given test data consisting of 2.000 Dutch sentences by translating each one of these sentences to English. Finally we evaluated our results by running the \textit{BLEU} script \verb|multi-bleu.perl| script. The results are presented in Table \ref{bleuresults}:
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ l l }
+  \hline \hline
+  \textbf{Bleu Score} & 24.68 \\
+  \hline \hline
+  \textbf{1-gram precision} & 59.5 \\
+  \textbf{2-gram precision} & 31.4 \\
+  \textbf{3-gram precision} & 19.0 \\
+  \textbf{4-gram precision} & 11.8 \\
+  \hline \hline
+  \textbf{BP} & 0,970 \\
+  \textbf{ratio} & 0,971 \\
+  \textbf{hyp\_len} & 49.018 \\
+  \textbf{ref\_len} & 50.488 \\
+  \hline \hline
+\end{tabular}
+\caption{\textit{BLEU} Results on the test set, where the following abbreviations stand for: BP (brevity penalty) = min(1, number of output words / number of reference words, ratio = number of output words / number of reference words, hyp\_len = number of output words, ref\_len = number of reference words}
+\label{bleuresults}
+\end{table}
 
 \section{Conclusion}
 \label{Concl}
