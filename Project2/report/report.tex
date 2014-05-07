@@ -35,7 +35,7 @@
 \maketitle
 
 \begin{abstract}
-Currently in statistical machine translation the best performing systems rely on phrase pairs extracted from word aligned parallel corpora.
+Phrase-based statistical machine translation relies on phrase pairs extracted from word aligned parallel corpora.
 The number of possible phrase pairs in parallel data is huge, so this space needs to be reduced for computational reasons.
 We take the common heuristic approach to select only those pairs that are consistent with word-aligned data. We implemented a phrase pair extraction algorithm and run it with alignments provided by \textit{Giza++}. We also present how to get the conditional and joint probability estimates of the phrases. 
 We trained and evaluated Moses, an existing phrase-based translation toolkit. We compare our phrase table to the phrases extracted by Moses, computing precision and recall .
@@ -192,9 +192,11 @@ We also ran our extraction algorithm with the maximum length equal to that of Mo
 
 \section{Conclusion}
 \label{Concl}
-Although phrase based translation has proved its worth, the attention of the field of statistical machine translation has shifted from the simple approach presented here towards new and even better models using for instance hierarchical or syntactical phrases.
+Although phrase based translation has proved its worth, the attention of the field of statistical machine translation has shifted from the simple approach presented here towards new and even better models using for instance hierarchical or syntactical phrases. The phrase tables are built in a more sophisticated way. 
 
-It might be interesting to explore the role of punctuation in translation. Of course, punctuation occurs a lot in textual data, but it is hardly ever sensible to build phrases with punctuation. As mentioned in paragraph \ref{Eval}, we noted that many of the phrases in the held-out set that needed to be constructed from smaller phrases, dealt with punctuation. The size of phrase tables could possibly be reduced by treating punctuation in a special way in the extraction stage.
+An approach that we are curious to investigate, is to improve the phrase table quality by using evidence from more than two languages, for instance by triangulation. This would be an extension to the phrase based translation to take it to a new level.
+
+Furthremore, it might be interesting to explore the role of punctuation in translation. Of course, punctuation occurs a lot in textual data, but it is hardly ever sensible to build phrases with punctuation. As mentioned in paragraph \ref{Eval}, we noted that many of the phrases in the held-out set that needed to be constructed from smaller phrases, dealt with punctuation. The size of phrase tables could possibly be reduced by treating punctuation in a special way in the extraction stage.
 
 
 \begin{thebibliography}{}
