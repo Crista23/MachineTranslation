@@ -49,7 +49,8 @@ Even more so in cases where each source word is aligned to exactly one target wo
 We implemented a phrase extraction algorithm that we compare to Moses, an existing statistical machine translation system that allows for automatically training translation models for any language pair. We introduce Moses and the evaluation metric we use, Bleu, in section \ref{existing}. In section \ref{phraseExtraction} follows a presentation of the phrase extraction algorithm we implemented and we offer an insight into how to get joint and conditional probability estimates.
 In section \ref{Eval} we present the results we obtained and finally we conclude in section \ref{Concl}.
 
-\section{Moses and Bleu}
+\section{Related Work}
+%\subsection{Moses and Bleu}
 \label{existing}
 As outlined in \cite{moses}, phrase based statistical machine translation has emerged nowadays as the dominant paradigm in machine translation research. \textit{Moses} \cite{mosesurl} is an open source toolkit which contains tools for data processing and training language and translation models, as well as components for tunning these models and evaluation of the translated output. In order to avoid duplicates, \textit{Moses} makes use of \textit{Giza++} \cite{giza++} for word alignments and \textit{SRILM} \cite{srilm} for language modeling. 
 
