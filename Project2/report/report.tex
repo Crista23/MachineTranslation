@@ -150,6 +150,32 @@ Using the data provided to us for training consisting of 100K Dutch-English bili
 \label{bleuresults}
 \end{table}
 
+We further calculated Precision and Recall figures of the phrases we extracted with respect to the phrases extracted by Moses. The size of our phrase table is 3.904.713, while the size of the size of the phrase table outputted by Moses is 7.277.021. The maximum default length of the phrases extracted by Moses is set to 7, for this reason we considered two distinct cases: \textit{i)} when we use the alignments handed in to us for this assignment and \textit{ii)} the case when we use the \textit{Moses} alignments, both for a maximum phrase pair length of 4. Our results are shown in Table \ref{PR}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ c c c}
+  \hline \hline
+  \textbf{Case} & \textbf{Precision} & \textbf{Recall} \\
+  \hline \hline
+  \textbf{i)} &  0.7539 & 0.4042 \\
+  \textbf{ii)} & 1.0 & 0.5366 \\
+  \hline
+\end{tabular}
+\caption{Precision and Recall of the extracted phrases with respect to the phrases extracted by Moses}
+\label{PR}
+\end{table}
+
+We also tested the case when the maximum length of the phrases extracted by us equals 7 (the maximum length of the phrases extracted by Moses) and ensured that Precision and Recall scores are 1, which confirms the reliability of our approach.
+
+%for moses alignments + phrases up to length 4 
+%precision 1
+%recall 0.53658
+
+%for alignments handed in to us
+%precision 0.75398
+%recall 0.40421
+
 \section{Conclusion}
 \label{Concl}
 
