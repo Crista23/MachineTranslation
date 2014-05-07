@@ -58,7 +58,7 @@ In section \ref{Eval} we present the results we obtained and finally we conclude
 \label{existing}
 As outlined in \cite{moses}, phrase based statistical machine translation has emerged nowadays as the dominant paradigm in machine translation research. \textit{Moses} \cite{mosesurl} is an open source toolkit which contains tools for data processing and training language and translation models, as well as components for tuning these models and evaluation of the translated output. In order to avoid duplicates, \textit{Moses} makes use of \textit{Giza++} \cite{giza++} for word alignments and \textit{SRILM} \cite{srilm} for language modeling. 
 
-The training pipeline and the decoder are the main components of the system. Parallel data is fed as input to the training process (typically preprocessed beforehand by ignoring long sentences and removing misaligned sentence pairs) and the translation correspondences between the two languages are inferred by determining word co-occurences. The training procedure is split into 9 distinct steps: after preparing the data, word alignments are taken from the intersection of bidirectional rules of \textit{Giza++} and some alignment points from the union of the two runs, based on a number of heuristics. In this manner it is possible to estimate the maximum likelihood translation table useful for phrase extraction. The extracted phrases are then scored by collecting counts and computing the phrase translation probabilities $\phi(e|f)$ for each foreign phrase $f$. A reordering model based on distance and a generation model built from the target side of the parallel corpus are both included in the final configuration file which is generated last and needed for decoding.
+The training pipeline and the decoder are the main components of the system. Parallel data is fed as input to the training process (typically preprocessed beforehand by ignoring long sentences and removing misaligned sentence pairs) and the translation correspondences between the two languages are inferred by determining word co-occurrences. The training procedure is split into 9 distinct steps: after preparing the data, word alignments are taken from the intersection of bidirectional rules of \textit{Giza++} and some alignment points from the union of the two runs, based on a number of heuristics. In this manner it is possible to estimate the maximum likelihood translation table useful for phrase extraction. The extracted phrases are then scored by collecting counts and computing the phrase translation probabilities $\phi(e|f)$ for each foreign phrase $f$. A reordering model based on distance and a generation model built from the target side of the parallel corpus are both included in the final configuration file which is generated last and needed for decoding.
 
 Given a trained translation model and a source sentence, the decoder will translate the source sentence into the target language by finding the highest scoring sentence in the target language which matches the source sentence. The Moses decoder uses the beam search algorithm that quickly finds the highest probability translation among an exponential number of choices. The score for a translation is computed using the weights of the individual phrases it contains (by looking them up in the Moses phrase table) and the overall language model probability of the combination (by querying the language model for the target language). Hypothesis that cover all foreign words are the ones kept in the final state.
 
@@ -97,7 +97,7 @@ To investigate the usefulness of the extracted phrases for unknown text, we comp
 Since the phrase table is stored as a mapping from target to source phrases, we start from the target side. 
 We begin with one possible target split, and look up the leftmost phrase part in the table. If it translates to any part of the foreign phrase, we recursively call the building algorithm with the remainder of the target and source phrase. Whenever a target part cannot be translated, the search for this split option is abandoned. 
 
-The coverage percentage is the relative number of phrase pairs in the heldout set that are either in the phrase table or can be constructed as described above.
+The coverage percentage is the relative number of phrase pairs in the held-out set that are either in the phrase table or can be constructed as described above.
 
 
 \paragraph{Conditional Probability Estimates}
@@ -107,7 +107,7 @@ After having extracted the phrase pairs, we compute the conditional translation 
 \phi(\overline{f}|\overline{e}) = \frac{count(\overline{e}, \overline{f})}{\sum_{\overline{f}_i} count(\overline{e},\overline{f}_i)}
 \end{align*}
 
-Here $count(\overline{e}, \overline{f})$ denotes in how many sentence pairs a specific phrase occurs and is extracted. To get relative frequency estimates, we normalize this value by the count of occurences of all phrase pairs containg the English phrase $\overline{e}$ inside the whole corpus.
+Here $count(\overline{e}, \overline{f})$ denotes in how many sentence pairs a specific phrase occurs and is extracted. To get relative frequency estimates, we normalize this value by the count of occurrences of all phrase pairs containing the English phrase $\overline{e}$ inside the whole corpus.
 
 
 \paragraph{Joint Probability Estimates}
