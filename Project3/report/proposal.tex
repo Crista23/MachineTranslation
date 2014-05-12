@@ -60,6 +60,11 @@ Method 2 is somewhat more lenient, in that it looks at the words occurring in th
 % Cohn and Lapata
 The authors of \cite{cohn} focus less on reducing the phrase tables, but use triangulation to obtain high quality phrase tables from multilingual data, even if they are not from the same corpus. They use a summation over the several intermediate languages to form a probability estimate: $p(s|t)=\sum_i p(s|i)p(i|t)$. Interestingly, the triangulated phrase table is trained separate from the standard phrase table, so that it can be used as a distinct feature in decoding.
 
+\section{Goals}
+
+In this project we are planning to build a phrase pair extraction tool for phrases of up to length 7 that would use evidence from multilingual aligned corpora. To achieve our goal we aim to use Europarl % cite EUroparl
+data for Dutch, English, Romanian, French, German. % maybe add some more?
+We are planning to investigate how we can use the evidence from word alignments between several languages to extract phrase pairs and estimate their conditional and joint probabilities. We also want to focus on determining if we can achieve better symmetrization compared to the case when all phrase pairs are consistent with a symmetrized word alignment.
 
 \begin{thebibliography}{}
 
