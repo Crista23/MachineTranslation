@@ -37,20 +37,20 @@
 
 \section{Introduction}
 This proposal continues to build on the phrase based machine translation approach.
-In principle, the set of possible phrase pairs is far too huge to be computationally manageable. 
-Especially if the size of the corpus grows, the 
+In principle, the set of possible phrase pairs is far too huge to be computationally manageable, especially if the size of the corpus grows.
 Therefore, we need to restrict this set in some way, to keep only useful/ meaningful phrase pairs. This reduction might be the main challenge in phrase based machine translation.
 
-In the baseline approach we took in the previous assignment, this reduction was based on Giza++ output: only those phrase pairs that were consistent with symmetrized word alignments were added to the phrase table.
-This yields a large reduction and proves useful for translation, obtaining for instance a BLEU score of 24.68 in our previous assignment \cite{previous}.
-But the MT community has moved forward, and can do better now.
+In the approach we took in the previous assignment, this reduction was based on Giza++ output: only those phrase pairs that were consistent with symmetrized word alignments were added to the phrase table.
+%This yields a large reduction and proves useful for translation, obtaining for instance a BLEU score of 24.68 in our previous assignment \cite{previous}.
+%But the MT community has moved forward, and can do better now.
 
-One possibility that we aim to investigate in this project, is to use multi-parallel corpora. These data consist of documents in more than two languages with aligned sentences. The process of incorporating evidence from multilingual data in a single system is called \emph{triangulation}. 
+The possibility that we aim to investigate in this project, is to use multi-parallel corpora. These data consist of documents in more than two languages with aligned sentences. The process of incorporating evidence from multilingual data in a single system is called \emph{triangulation}. 
 
 \section{Related work}
 
 %Chen, Eisele and Kay 
-Two methods are presented in In \cite{chen} to filter the phrase table for a language pair which we will dubb \emph{source-target}, based on an intermediate third \emph{bridge} language. 
+Two methods are presented in \cite{chen} to filter the phrase table for a language pair% which we will dubb \emph{source-target}
+, based on an intermediate third \emph{bridge} language. 
  Both methods assume an existing {\em source-target} phrase table, based on Giza++, and filter its entries with evidence from phrase tables {\em source-bridge} and {\em bridge-target} where {\em bridge} is an intermediate language.
 
 In method 1, for each phrase pair $\langle s, t\rangle \in source-target$, it is kept if there is an entire phrase $b$ in the bridge language such that $\langle s,b\rangle \in source-bridge$ and also $\langle b,t\rangle \in bridge-target$.
@@ -58,14 +58,13 @@ In method 1, for each phrase pair $\langle s, t\rangle \in source-target$, it is
 Method 2 is somewhat more lenient, in that it looks at the words occurring in the phrases instead of an exact match of the entire phrase. An overlap score is assigned to each phrase pair, based on the intersection of the vocabularies in each phrase. The filtering is done by placing a threshold on this score.
 
 % Cohn and Lapata
-The authors of \cite{cohn} focus less on reducing the phrase tables, but use triangulation to obtain high quality phrase tables from multilingual data, even if they are not from the same corpus. They use a summation over the several intermediate languages to form a probability estimate: $p(s|t)=\sum_i p(s|i)p(i|t)$. Interestingly, the triangulated phrase table is trained separate from the standard phrase table, so that it can be used as a distinct feature in decoding.
+The authors of \cite{cohn} focus less on reducing the phrase tables, but use triangulation to obtain high quality phrase tables from multilingual data, even if they are not from the same corpus. They use a summation over several intermediate languages to form a probability estimate: $p(s|t)=\sum_i p(s|i)p(i|t)$. Interestingly, the triangulated phrase table is trained separate from the standard phrase table, so that it can be used as a distinct feature in decoding.
 
 \section{Goals}
 
 In this project we are planning to build a phrase pair extraction tool for phrases of up to length 7 that would use evidence from multilingual aligned corpora. To achieve our goal we aim to use Europarl % cite EUroparl
 data for Dutch, English, Romanian, French, German. % maybe add some more?
-We are planning to investigate how we can use the evidence from word alignments between several languages to extract phrase pairs and estimate their conditional and joint probabilities. We also want to focus on determining if we can achieve better symmetrization compared to the case when all phrase pairs are consistent with a symmetrized word alignment.
-
+We are planning to investigate how we can use the evidence from word alignments between several languages to extract, rather than filter, phrase pairs and estimate their conditional and joint probabilities. For this, we consider the possibility to improve word alignment symmetrization from multilingual word alignments of the same target sentence.
 \begin{thebibliography}{}
 
 \bibitem[1]{previous}
