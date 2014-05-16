@@ -1,20 +1,20 @@
-source=fr
-target=en
-run=01$source-$target
+source=$1
+target=$2
+run=$3-$source-$target
 
 #Get Giza alignments
 
 /apps/smt_tools/decoders/mosesdecoder/scripts/training/train-model.perl     \
 --parallel     \
 -external-bin-dir /apps/smt_tools/alignment/mgizapp-0.7.3/manual-compile \
---root-dir /home/sveldhoen/MTProject3/mosesOutput/run \
+--root-dir /home/sveldhoen/MTProject3/mosesOutput/$run \
 --corpus /home/sveldhoen/MTProject3/data/$source-$target/europarl-v7.$source-$target  \
 --f $source    \
 --e $target    \
 --first-step 1 \
 --last-step 3  \
---giza-f2e $ROOT/giza-$source-$target.txt \
---giza-e2f $ROOT/giza-$target-$source.txt \
+--giza-f2e $ROOT/giza-$source-$target \
+--giza-e2f $ROOT/giza-$target-$source \
 -mgiza -mgiza-cpus 4
 
 
