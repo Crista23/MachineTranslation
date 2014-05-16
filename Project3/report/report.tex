@@ -1,0 +1,179 @@
+\documentclass[11pt]{article}
+\usepackage{acl2014}
+\usepackage{times}
+\usepackage{url}
+\usepackage{graphicx}
+%\usepackage{latexsym}
+
+
+%figures:
+\usepackage{tikz}
+\usetikzlibrary{trees,positioning,backgrounds}
+%\usepackage{tikz-qtree}
+\usepackage{subcaption}
+
+%references and keeping floats in place
+\usepackage[pdftex,pdfborder={0 0 0},unicode,breaklinks,hyperfootnotes=false,bookmarks]{hyperref}
+\usepackage[section]{placeins}
+
+\usepackage{amsmath} 
+\renewcommand{\vec}[1]{\mathbf{#1}}
+
+\title{Statistical Structure in Language Processing \\Using multi-parallel data for phrase-table improvement}
+\author{ Cristina G\^arbacea\\
+  10407936 \\
+  {\small \tt cr1st1na.garbacea@gmail.com} 
+  \\\And
+  Sara Veldhoen \\
+10545298   \\
+  {\small \tt sara.veldhoen@student.uva.nl} \\}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+
+\section{Introduction}
+%This proposal continues to build on the phrase based machine translation approach.
+In principle, the set of possible phrase pairs is far too huge to be computationally manageable, especially if the size of the corpus grows.
+Therefore, we need to restrict this set in some way, to keep only useful/ meaningful phrase pairs. This reduction might be the main challenge in phrase based machine translation.
+
+In the approach we took in the previous assignment, the reduction was based on Giza++ output: only those phrase pairs that were consistent with symmetrized word alignments were added to the phrase table.
+%This yields a large reduction and proves useful for translation, obtaining for instance a BLEU score of 24.68 in our previous assignment \cite{previous}.
+%But the MT community has moved forward, and can do better now.
+
+The possibility that we aim to investigate in this project, is to use multi-parallel corpora. These data consist of documents in more than two languages with aligned sentences. The process of incorporating evidence from multilingual data in a single system is called \emph{triangulation}. 
+
+\section{Related work}
+
+%Chen, Eisele and Kay 
+Two methods are presented in \cite{chen} to filter the phrase table for a language pair% which we will dubb \emph{source-target}
+, based on an intermediate third \emph{bridge} language. 
+ Both methods assume an existing {\em source-target} phrase table, based on Giza++, and filter its entries with evidence from phrase tables {\em source-bridge} and {\em bridge-target}.
+
+In method 1, for each phrase pair $\langle s, t\rangle \in source-target$, it is kept if there is an entire phrase $b$ in the bridge language such that $\langle s,b\rangle \in source-bridge$ and also $\langle b,t\rangle \in bridge-target$.
+
+Method 2 is somewhat more lenient, in that it looks at the words occurring in the phrases instead of an exact match of the entire phrase. An overlap score is assigned to each phrase pair, based on the intersection of the vocabularies in the phrases. The filtering is done by placing a threshold on this score.
+
+% Cohn and Lapata
+The authors of \cite{cohn} focus less on reducing the phrase tables, but use triangulation to obtain high quality phrase tables from multilingual data, even if they are not from the same corpus. They use a summation over several intermediate languages to form a probability estimate: $p(s|t)=\sum_i p(s|i)p(i|t)$. Interestingly, the triangulated phrase table is trained separate from the standard phrase table, so that it can be used as a distinct feature in decoding.
+
+%\section{Goals}
+%In this project we are planning to build a phrase pair extraction tool for phrases of up to length 7 that would use evidence from multilingual aligned corpora. To achieve our goal we aim to use Europarl % cite EUroparl
+%data for Dutch, English, Romanian, French, German. % maybe add some more?
+%We are planning to investigate how we can use the evidence from word alignments between several languages to extract, rather than filter, phrase pairs and estimate their conditional and joint probabilities. For this, we consider the possibility to improve word alignment symmetrization from multilingual word alignments of the same target sentence.
+
+
+
+\section{Word-alignments}
+Phrase pair extraction is based on symmetrized word alignments. 
+
+The bidirectional word alignments are obtained with {\tt Giza++}, which is a combination of IBM-models. Although the quality of these alignments is not very high on itself, they have proven to be a useful guide in the extraction of phrase pairs. 
+
+%The symmetrization is done by Moses, which provides several heuristics to do so. We use the default setting for our baseline, i.e. grow-diag-final-and. 
+
+ Because of the design of IBM models, the unidirectional word-alignments are one to many. For symmetrized word alignment, where many-to-many alignments are possible, both directions are used and their alignment points combined. Each word-alignment can be viewed as a matrix with words in both languages along the axes, and binary values in the cells: either the words are aligned, or not. If we combine the two directions, we introduce new values for the cells: the alignment point is either present in both directions ($\mathcal B$), in the for-tar alignment ($\mathcal F$), in the tar-for alignment ($\mathcal T$), or in none (empty).
+
+The Moses alignment symmetrization is aimed to recast such a matrix back into a binary matrix. Union and intersection are the extreme choices, several  heuristics are available in Moses that compromise them:\begin{itemize}
+\item {\tt union} contains all non-empty cells. This heuristic has a high recall, but might have many false positives.
+\item  {\tt intersection} keeps only the $\mathcal B$ cells. These are the high-confidence points, thus improving precision but (generally) dropping recall.
+\item {\tt grow} starts from the intersection and adds block-neighboring non-empty cells.
+\item {\tt grow-diag} is like {\tt grow}, but it also includes diagonally neighboring non-empty cells.
+\item {\tt final} is used after either heuristic, to add as many as possible unaligned words that are not neighbored.  %Don't fully understand how though
+%\item {\tt grow-diag-final-and} is not explained in the Moses manual
+\end{itemize}
+
+In these heuristics, Moses does not distinguish between $\mathcal F$ and $\mathcal B$ cells. Since we use multi-parallel data that all translates to the same target (English), our extraction is not entirely symmetrical and this distinction might be of importance. 
+
+Our base-line 
+
+\begin{thebibliography}{}
+
+\bibitem[1]{previous}
+{Cristina G{\^a}rbacea and Sara Veldhoen},
+\newblock{2014}.
+\newblock{\em Phrase based models},
+\newblock Statistical Structure in Language Processing assignment
+
+\bibitem[2]{chen}
+{Yu Chen, Andreas Eisele, Martin Kay},
+\newblock{2008}.
+\newblock{\em Improving Statistical Machine Translation Efficiency by Triangulation},
+\newblock LREC
+
+\bibitem[3]{cohn}
+{Trevor Cohn and Mirella Lapata},
+\newblock{2007}.
+\newblock{\em Machine translation by triangulation: Making effective use of multi-parallel corpora},
+\newblock {ANNUAL MEETING-ASSOCIATION FOR COMPUTATIONAL LINGUISTICS}
+
+
+%%\bibitem[\protect\citename{Gusfield}1997]{Gusfield:97}
+%%Dan Gusfield.
+%%\newblock 1997.
+%%\newblock {\em Algorithms on Strings, Trees and Sequences}.
+%%\newblock Cambridge University Press, Cambridge, UK.
+%
+%\bibitem[1]{Koehn:2010}
+%Philipp Koehn,
+%\newblock 2010.
+%\newblock {\em Statistical Machine Translation}.
+%\newblock Cambridge University Press.
+%
+%\bibitem[2]{marcu2002}
+%{Daniel Marcu and William Wong},
+%\newblock 2002.
+%\newblock {\em A phrase-based, joint probability model for statistical machine translation}.
+%\newblock {Association for Computational Linguistics}.
+%%@inproceedings{marcu2002phrase,
+%%  title={A phrase-based, joint probability model for statistical machine translation},
+%%  author={Marcu, Daniel and Wong, William},
+%%  booktitle={Proceedings of the ACL-02 conference on Empirical methods in natural language processing-Volume 10},
+%%  pages={133--139},
+%%  year={2002},
+%%  organization={Association for Computational Linguistics}
+%%}
+%
+%\bibitem[3]{och1999}
+%{Franz Josef Och, Christoph Tillmann, and Hermann Ney},
+%\newblock 1999.
+%\newblock {\em Improved alignment models for statistical machine translation}
+%\newblock {Proceedings of the Joint SIGDAT Conf. on Empirical Methods in Natural Language Processing and Very Large Corpora}.
+%
+%\bibitem[4]{mosesurl}
+%{Koehn, Philipp},
+%\newblock 2014.
+%\newblock {\em Statistical Machine Translation System. User Manual and Code Guide}
+%\newblock {\url{http://statmt.org/moses/manual/manual.pdf}}.
+%
+%\bibitem[5]{moses}
+%{Koehn, Philipp, et al}
+%\newblock{2007}
+%\newblock{\em Moses: Open source toolkit for statistical machine translation}.
+%\newblock{Proceedings of the 45th Annual Meeting of the ACL on Interactive Poster and Demonstration Sessions}.
+%
+%\bibitem[6]{giza++}
+%{Franz Josef Och and Hermann Ney}
+%\newblock{2003}
+%\newblock{\em A Systematic Comparison of Various Statistical Alignment Models}.
+%\newblock{Computational Linguistics, 1:29, 19-51}.
+%
+%\bibitem[7]{srilm}
+%{Andreas Stolcke}
+%\newblock{2002}
+%\newblock{\em SRILM - An Extensible Language Modeling Toolkit}.
+%\newblock{901--904}.
+%
+%\bibitem[8]{bleu}
+%{Kishore Papineni and Salim Roukos and Todd Ward and Wei-Jing Zhu}
+%\newblock{2002}
+%\newblock{\em BLEU - A Method for Automatic Evaluation of Machine Translation}.
+%\newblock{Proceedings of the 40th Annual Meeting of the Association for ACL}.
+%\newblock{311--318}.
+
+
+\end{thebibliography}
+
+\end{document}

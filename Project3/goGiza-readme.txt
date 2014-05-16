@@ -11,3 +11,8 @@ nohup bash goGiza.sh [source] [target] [run] > [outputfile] &
 [target] - the target language extension, probably always en
 [run] - an identifier for the run, e.g. a number or date. Note that the script appends the source and target language to the run, so you can use the same runnumber for different language pairs if you run them simultaneously
 [outputfile] - the file which the output should be written to, instead of nohup.out (tha latter is problematic when running multiple nohup commands at the same time)
+
+
+
+
+the script goGizaSymm creates seven alignment files (to be found in the model directory)
