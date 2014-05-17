@@ -19,7 +19,7 @@
 \usepackage{amsmath} 
 \renewcommand{\vec}[1]{\mathbf{#1}}
 
-\title{Statistical Structure in Language Processing \\Project 3 research proposal}
+\title{Statistical Structure in Language Processing \\Using multi-parallel data for phrase-table improvement}
 \author{ Cristina G\^arbacea\\
   10407936 \\
   {\small \tt cr1st1na.garbacea@gmail.com} 
@@ -36,7 +36,7 @@
 
 
 \section{Introduction}
-This proposal continues to build on the phrase based machine translation approach.
+%This proposal continues to build on the phrase based machine translation approach.
 In principle, the set of possible phrase pairs is far too huge to be computationally manageable, especially if the size of the corpus grows.
 Therefore, we need to restrict this set in some way, to keep only useful/ meaningful phrase pairs. This reduction might be the main challenge in phrase based machine translation.
 
@@ -60,11 +60,35 @@ Method 2 is somewhat more lenient, in that it looks at the words occurring in th
 % Cohn and Lapata
 The authors of \cite{cohn} focus less on reducing the phrase tables, but use triangulation to obtain high quality phrase tables from multilingual data, even if they are not from the same corpus. They use a summation over several intermediate languages to form a probability estimate: $p(s|t)=\sum_i p(s|i)p(i|t)$. Interestingly, the triangulated phrase table is trained separate from the standard phrase table, so that it can be used as a distinct feature in decoding.
 
-\section{Goals}
+%\section{Goals}
+%In this project we are planning to build a phrase pair extraction tool for phrases of up to length 7 that would use evidence from multilingual aligned corpora. To achieve our goal we aim to use Europarl % cite EUroparl
+%data for Dutch, English, Romanian, French, German. % maybe add some more?
+%We are planning to investigate how we can use the evidence from word alignments between several languages to extract, rather than filter, phrase pairs and estimate their conditional and joint probabilities. For this, we consider the possibility to improve word alignment symmetrization from multilingual word alignments of the same target sentence.
 
-In this project we are planning to build a phrase pair extraction tool for phrases of up to length 7 that would use evidence from multilingual aligned corpora. To achieve our goal we aim to use Europarl % cite EUroparl
-data for Dutch, English, Romanian, French, German. % maybe add some more?
-We are planning to investigate how we can use the evidence from word alignments between several languages to extract, rather than filter, phrase pairs and estimate their conditional and joint probabilities. For this, we consider the possibility to improve word alignment symmetrization from multilingual word alignments of the same target sentence.
+
+
+\section{Word-alignments}
+Phrase pair extraction is based on symmetrized word alignments. 
+
+The bidirectional word alignments are obtained with {\tt Giza++}, which is a combination of IBM-models. Although the quality of these alignments is not very high on itself, they have proven to be a useful guide in the extraction of phrase pairs. 
+
+%The symmetrization is done by Moses, which provides several heuristics to do so. We use the default setting for our baseline, i.e. grow-diag-final-and. 
+
+ Because of the design of IBM models, the unidirectional word-alignments are one to many. For symmetrized word alignment, where many-to-many alignments are possible, both directions are used and their alignment points combined. Each word-alignment can be viewed as a matrix with words in both languages along the axes, and binary values in the cells: either the words are aligned, or not. If we combine the two directions, we introduce new values for the cells: the alignment point is either present in both directions ($\mathcal B$), in the for-tar alignment ($\mathcal F$), in the tar-for alignment ($\mathcal T$), or in none (empty).
+
+The Moses alignment symmetrization is aimed to recast such a matrix back into a binary matrix. Union and intersection are the extreme choices, several  heuristics are available in Moses that compromise them:\begin{itemize}
+\item {\tt union} contains all non-empty cells. This heuristic has a high recall, but might have many false positives.
+\item  {\tt intersection} keeps only the $\mathcal B$ cells. These are the high-confidence points, thus improving precision but (generally) dropping recall.
+\item {\tt grow} starts from the intersection and adds block-neighboring non-empty cells.
+\item {\tt grow-diag} is like {\tt grow}, but it also includes diagonally neighboring non-empty cells.
+\item {\tt final} is used after either heuristic, to add as many as possible unaligned words that are not neighbored.  %Don't fully understand how though
+%\item {\tt grow-diag-final-and} is not explained in the Moses manual
+\end{itemize}
+
+In these heuristics, Moses does not distinguish between $\mathcal F$ and $\mathcal B$ cells. Since we use multi-parallel data that all translates to the same target (English), our extraction is not entirely symmetrical and this distinction might be of importance. 
+
+Our base-line 
+
 \begin{thebibliography}{}
 
 \bibitem[1]{previous}
