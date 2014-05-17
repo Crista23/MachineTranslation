@@ -1,14 +1,33 @@
 source=$1
 target=$2
 run=$3-$source-$target
+root = /home/sveldhoen/MTProject3/
+data = $root/data/$source-$target
+
+#Preprocess the corpus (if necessary)
+# i.e.: lowercase, remove empty lines, remove long sentences (50<)
+if [-f $data/cleanLC.$target];
+then
+   echo "Corpus in place, start Moses"
+else
+   echo "Preprocessing corpus..."
+   /apps/smt_tools/decoders/mosesdecoder/scripts/training/clean-corpus-n.perl \
+   -lc \
+   $data/europarl-v7.$source-$target\
+   $source $target \
+   $data/cleanLC \
+   1 50
+   "Done, start Moses"
+fi
+
 
 #Get Giza alignments
 
 /apps/smt_tools/decoders/mosesdecoder/scripts/training/train-model.perl     \
 --parallel     \
 -external-bin-dir /apps/smt_tools/alignment/mgizapp-0.7.3/manual-compile \
---root-dir /home/sveldhoen/MTProject3/mosesOutput/$run \
---corpus /home/sveldhoen/MTProject3/data/$source-$target/europarl-v7.$source-$target  \
+--root-dir $root/mosesOutput/$run \
+--corpus $data/cleanLC  \
 --f $source    \
 --e $target    \
 --first-step 1 \
@@ -22,8 +41,8 @@ do
   /apps/smt_tools/decoders/mosesdecoder/scripts/training/train-model.perl     \
   --parallel     \
   -external-bin-dir /apps/smt_tools/alignment/mgizapp-0.7.3/manual-compile \
-  --root-dir /home/sveldhoen/MTProject3/mosesOutput/$run \
-  --corpus /home/sveldhoen/MTProject3/data/$source-$target/europarl-v7.$source-$target  \
+  --root-dir $root/mosesOutput/$run \
+  --corpus $data/cleanLC  \
   --f $source    \
   --e $target    \
   --first-step 3 \

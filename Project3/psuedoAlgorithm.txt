@@ -1,0 +1,16 @@
+Establish a good English window using evidence from several languages. Only then, find a corresponding source window.
+
+for each target window w_e:
+    good = True
+    for each foreign language f:
+        if there is no consistent foreign window w_f in the alignment-union-e-f:
+           #NB union is lenient, but we could also use heuristic (intersection may be too rigid) - experiments?
+           #Or intersection + one direction? 
+           #Might also depend on the number of languages we use for reference..
+           good = False
+           break
+        if good:
+           find consistent source window w_f
+           add phrase pair to phrase table
+
+Check for each English window whether there exists a corresponding phrase in
