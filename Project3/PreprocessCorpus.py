@@ -33,28 +33,46 @@ def getLine(lineIndex, fileType):
     
     line = lines[lineIndex]
     return line
+
+def getCorrespondingLines(engLine):
+    engFile2Index = -1
+    engFile3Index = -1
     
+    with open(engFile2, 'rb') as enf2, open(engFile3, 'rb') as enf3:
+        for i, line in enumerate(enf2):
+            line = line.replace("\n", "")
+            print "line"
+            print line
+            if(engLine == line):
+                # get the index of the first occurence
+                engFile2Index = i
+                break
+        for j, line in enumerate(enf3):
+            line = line.replace("\n", "")
+            if(engLine == line):
+                # get the index of the first occurence
+                engFile3Index = j
+                break
+    return engFile2Index, engFile3Index
+
 def alignEuroparlCorpora(engFile1):
     #output files
+    fAlignedEnglishFile = open("MTProject3/data/fr-en/europarl-v7-alignedEN.en-en.en", 'w')
     fAlignedFrenchFile = open("MTProject3/data/fr-en/europarl-v7-alignedFR.fr-en.fr", 'w')
     fAlignedDutchFile = open("MTProject3/data/nl-en/europarl-v7-alignedNL.nl-en.nl", 'w')
     fAlignedRomanianFile = open("MTProject3/data/ro-en/europarl-v7-alignedRO.ro-en.ro", 'w')
 
     with open(engFile1, 'rb') as engFile1:
         lines = csv.reader(engFile1, delimiter='\n')
-        for i, line in enumerate(lines):
-            print i
-            print line
-            #check if the very same line is found in the other two english files
-            lineFound = lineLookup(line, engFile2, engFile3)
-            if(lineFound == 1):
-                print "found"
-                #retrieve the line from file at the corresponding index
+        for i, line in enumerate(lines):            
+            line = line[0]
+            engFile2Index, engFile3Index = getCorrespondingLines(line)
+            if(engFile2Index != -1 and engFile3Index != -1):
+                print "RETRIEVE LINES"
+                fAlignedEnglishFile.write(line + "\n")
                 fAlignedFrenchFile.write(getLine(i, "fr"))
-                fAlignedDutchFile.write(getLine(i, "nl"))
-                fAlignedRomanianFile.write(getLine(i, "ro"))
-            else:
-                print "not found"
+                fAlignedDutchFile.write(getLine(engFile2Index, "nl"))
+                fAlignedRomanianFile.write(getLine(engFile3Index, "ro"))
 
     fAlignedFrenchFile.close()
     fAlignedDutchFile.close()
