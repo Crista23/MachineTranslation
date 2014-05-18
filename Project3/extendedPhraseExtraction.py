@@ -6,7 +6,7 @@ def extractAllPhrases(eFile, fFiles, efFiles, feFiles, size):
              efLine.split()
 
 
-def extractPhrases(eLine, fLines, efLines, feLines, size, engPhrases):
+def extractPhrases(eLine, fLines, efLines, feLines, size, phraseTable):
     e = eLine
     f = fLines[0]
     if size <1:
@@ -29,7 +29,7 @@ def extractPhrases(eLine, fLines, efLines, feLines, size, engPhrases):
                #initialize f_s and f_e the extreme values
                f_s = len(f)
                f_e = 0
-               # Check for each alignment point whether is is in the English window
+               # Loop over the relevant part of the alignment matrix to find positive cells
                # Use the f-coordinate as f_s or f_e if it is smaller/ larger than the value so far
 
                for i in range(e_s, e_e):
@@ -37,11 +37,41 @@ def extractPhrases(eLine, fLines, efLines, feLines, size, engPhrases):
                        if A[j][i] != 0:
                           f_s = min(j, f_s)
                           f_e = max(j, f_e)
+               # If the English window is empty on the French side, do nothing
+               if f_e < f_s:
+                  return
+               fPrev = -1
+               fNext = len(f)
+               # Check for consistency of the window pair:
+               for j in range(f_s, f_e):
+                   for i in range(len(e)):
+                   if A[j][i]!=0 and (i<e_s or i>e_e):
+                      return
+                      #Inconsistent: an alignment point outside of the english window
+                      #              but inside the foreign window
+               #find borders fPrev and fNext
+               fs = f_s
+               # Widen the foreign window
+               # until you hit the previous/ next foreign alignment point: fPrev or fNext
+               while fs > fPrev:
+                   fe = f_e
+                   while fe < fNext:
+                   # If the foreign window does not violate the size constraint:
+                   # Extract the phrases and update the dictionary
+                       if fe-fs < size:
+                           engPhrase = getPhrase(e_s, e_e, e)
+                           forPhrase = getPhrase(fs,fe,f)
 
-            # Extract the phrase pairs in this window and update the dictionary and count
-            engPhrasees, count = extractHelper(e_s, e_e, f_s, f_e, e, f, size, A, engPhrases)
-            n += count
-    return engPhrases,n
+                           alignment = ""
+                           for i in range(fs, fe):
+                               for j in range(e_s,e_e):
+                                   if A[j][i] != 0:
+                                      alignment += ' '+str(i)+'-'+str(j)
+                           #write to the phrase table (append)
+                           with open(phraseTable, "a") as myfile:
+                               myfile.write(engPhrase+ ' ||| '+forPhrase+' |||'+alignment+'\n')
+                       fe +=1
+                   fs -= 1
 
 def windowOK(e_s, e_e, alignments)
     ok = True
@@ -53,6 +83,7 @@ def windowOK(e_s, e_e, alignments)
 
 def checkWindow(e_s, e_e, alignment):
     # check whether the (english) window is consistent with the alignment matrix
+    # This is the crucial part!
     return True
 
 
