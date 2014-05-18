@@ -13,8 +13,7 @@ roFile = "MTProject3/data/ro-en/europarl-v7.ro-en.ro"
 
 engFile2LastRetrievedIndex = 0
 engFile3LastRetrievedIndex = 0
-lines2Skipped = 0
-lines3Skipped = 0
+noOfSkippedLines = 1
 
 def lineLookup(engLineFile1, engFile2, engFile3):
     with open(engFile2, 'rb') as engFile2, open(engFile3, 'rb') as engFile3:
@@ -44,42 +43,31 @@ def getCorrespondingLines(engLine):
     engFile2Index = -1
     engFile3Index = -1
     global engFile2LastRetrievedIndex, engFile3LastRetrievedIndex
-    global lines2Skipped, lines3Skipped
+    global noOfSkippedLines
     
     with open(engFile2, 'rb') as enf2, open(engFile3, 'rb') as enf3:
-        lines2Skipped = engFile2LastRetrievedIndex - lines2Skipped
-        #print "lines2Skipped"
-        #print lines2Skipped
-        for i, line in enumerate(islice(enf2, engFile2LastRetrievedIndex, None)):
-            #print "i: " + str(i)
-            #print "last in:" + str(engFile2LastRetrievedIndex)
+        for i, line in enumerate(islice(enf2, engFile2LastRetrievedIndex, engFile2LastRetrievedIndex + noOfSkippedLines * 3)):
+        #for i, line in enumerate(islice(enf2, engFile2LastRetrievedIndex, None)):
             line = line.replace("\n", "")
             if(engLine == line):
                 # get the index of the first occurence
                 engFile2Index = engFile2LastRetrievedIndex + i
-                #lines2Skipped = engFile2LastRetrievedIndex + i
-                #print "lines2Skipped"
-                #print lines2Skipped
                 engFile2LastRetrievedIndex = engFile2Index
                 break
-
-        lines3Skipped = engFile3LastRetrievedIndex - lines3Skipped
-        #print "lines3Skipped"
-        #print lines3Skipped
-        for j, line in enumerate(islice(enf3, engFile3LastRetrievedIndex, None)):
+        
+        for j, line in enumerate(islice(enf3, engFile3LastRetrievedIndex, engFile3LastRetrievedIndex + noOfSkippedLines * 3)):
+        #for j, line in enumerate(islice(enf3, engFile3LastRetrievedIndex, None)):
             line = line.replace("\n", "")
             if(engLine == line):
                 # get the index of the first occurence
                 engFile3Index = engFile3LastRetrievedIndex + j
-                #lines3Skipped = engFile3LastRetrievedIndex + j
-                #print "lines3Skipped"
-                #print lines3Skipped
                 engFile3LastRetrievedIndex = engFile3Index
                 break
     
     return engFile2Index, engFile3Index
 
 def alignEuroparlCorpora(engFile1):
+    global noOfSkippedLines
     #output files
     fAlignedEnglishFile = open("MTProject3/data/fr-en/europarl-v7-alignedEN.en-en.en", 'w')
     fAlignedFrenchFile = open("MTProject3/data/fr-en/europarl-v7-alignedFR.fr-en.fr", 'w')
@@ -93,6 +81,7 @@ def alignEuroparlCorpora(engFile1):
                 line = line[0]
                 engFile2Index, engFile3Index = getCorrespondingLines(line)
                 if(engFile2Index != -1 and engFile3Index != -1):
+                    noOfSkippedLines = 1
                     print "|" + line + "|"
                     print "RETRIEVE LINES"
                     fAlignedEnglishFile.write(line + "\n")
@@ -102,6 +91,8 @@ def alignEuroparlCorpora(engFile1):
                     fAlignedDutchFile.write(getLine(engFile2Index, "nl"))
                     print getLine(engFile3Index, "ro")
                     fAlignedRomanianFile.write(getLine(engFile3Index, "ro"))
+                else:
+                    noOfSkippedLines += 1
                 
     fAlignedEnglishFile.close()
     fAlignedFrenchFile.close()
