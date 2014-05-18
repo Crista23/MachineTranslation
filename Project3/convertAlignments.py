@@ -1,3 +1,16 @@
+'''
+mGiza alignments are in the following format, that has three lines per corpus line:
+# <alignment information>
+<source sentence>
+<target word 1> ({<aligned words>}) <target word 2> ({<aligned words>}) ... <target word n> ({<aligned words>})
+
+This script converts it to something that is easier to process: a list of alignment points on one line
+<source-position>-<target-position> <source-position>-<target-position> ... <source-position>-<target-position>
+
+'''
+
+
+
 def main():
     inputFile = "mgizaAlignment.fr-en.fr"
     outputFile = "standardAlignment.fr-en.fr"
