@@ -74,7 +74,7 @@ The bidirectional word alignments are obtained with {\tt Giza++}, which is a com
 
 %The symmetrization is done by Moses, which provides several heuristics to do so. We use the default setting for our baseline, i.e. grow-diag-final-and. 
 
- Because of the design of IBM models, the unidirectional word-alignments are one to many. For symmetrized word alignment, where many-to-many alignments are possible, both directions are used and their alignment points combined. Each word-alignment can be viewed as a matrix with words in both languages along the axes, and binary values in the cells: either the words are aligned, or not. If we combine the two directions, we introduce new values for the cells: the alignment point is either present in both directions ($\mathcal B$), in the for-tar alignment ($\mathcal F$), in the tar-for alignment ($\mathcal T$), or in none (empty).
+ Because of the design of IBM models, the unidirectional word-alignments are one to many. For symmetrized word alignment, where many-to-many alignments are possible, both directions are used and their alignment points combined. Each word-alignment can be viewed as a matrix with words in both languages along the axes, and binary values in the cells: either the words are aligned, or not. If we combine the two directions, we introduce new values for the cells: the alignment point is either present in both directions ($\mathcal B$), in the source-target alignment ($\mathcal S$), in the target-source alignment ($\mathcal T$), or in none (empty).
 
 The Moses alignment symmetrization is aimed to recast such a matrix back into a binary matrix. Union and intersection are the extreme choices, several  heuristics are available in Moses that compromise them:\begin{itemize}
 \item {\tt union} contains all non-empty cells. This heuristic has a high recall, but might have many false positives.
@@ -85,7 +85,7 @@ The Moses alignment symmetrization is aimed to recast such a matrix back into a 
 %\item {\tt grow-diag-final-and} is not explained in the Moses manual
 \end{itemize}
 
-In these heuristics, Moses does not distinguish between $\mathcal F$ and $\mathcal B$ cells. Since we use multi-parallel data that all translates to the same target (English), our extraction is not entirely symmetrical and this distinction might be of importance. 
+In these heuristics, Moses does not distinguish between $\mathcal S$ and $\mathcal T$ cells. Since we use multi-parallel data that all translates to the same target (English), our extraction is not entirely symmetrical and this distinction might be of importance. 
 
 Our base-line 
 
