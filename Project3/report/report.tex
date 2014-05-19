@@ -36,17 +36,18 @@
 
 
 \section{Introduction}
-%This proposal continues to build on the phrase based machine translation approach.
+Phrase-based statistical machine translation relies on estimates of translation probabilities for pairs of phrases, stored in a so-called phrase table.
 In principle, the set of possible phrase pairs is far too huge to be computationally manageable, especially if the size of the corpus grows.
 Therefore, we need to restrict this set in some way, to keep only useful/ meaningful phrase pairs. This reduction might be the main challenge in phrase based machine translation.
 
-In the approach we took in the previous assignment, the reduction was based on Giza++ output: only those phrase pairs that were consistent with symmetrized word alignments were added to the phrase table.
-%This yields a large reduction and proves useful for translation, obtaining for instance a BLEU score of 24.68 in our previous assignment \cite{previous}.
+In the approach we took in the previous assignment, the reduction was based on Giza++ output: only those phrase pairs that were consistent with symmetrized word alignments were added to the phrase table. This is a standard approach, that yields a large reduction and proves useful for translation, obtaining for instance a BLEU score of 24.68 in our previous assignment \cite{previous}.
 %But the MT community has moved forward, and can do better now.
 
 The possibility that we aim to investigate in this project, is to use multi-parallel corpora. These data consist of documents in more than two languages with aligned sentences. The process of incorporating evidence from multilingual data in a single system is called \emph{triangulation}. 
 
 \section{Related work}
+
+In \cite{johnson} the phrase tables  are filtered
 
 %Chen, Eisele and Kay 
 Two methods are presented in \cite{chen} to filter the phrase table for a language pair% which we will dubb \emph{source-target}
@@ -90,6 +91,51 @@ In these heuristics, Moses does not distinguish between $\mathcal S$ and $\mathc
 Our base-line 
 
 The symmetrized alignments are used for reducing the space of phrase pairs. That means that having less alignment points, as in the intersection heuristic, is actually the more lenient choice for the phrase extraction step: you do not discard phrase pairs based on weak evidence. 
+
+
+
+\section{Experiments}
+
+\subsection{Data}
+
+We use the Europarl version 7 parallel data for English to respectively French, German, Danish, Italian, Dutch, Spanish, Greek
+ and Portuguese. This choice was based on the fact that parallel data exists for parliament proceedings of the same time interval for these languages, so that they are in a sense parallel beyond language level.
+%Greek? We excluded Greek because of the following remark: `` Some recent Greek data has only parts of transcripts in the files. "
+
+We use a script that comes with the Moses installation for initial preprocessing. It discards empty lines and lines with sentences that exceed a length threshold. Furthermore, all text is lowercased.
+
+The Europarl recommends to set aside the Q4/2000 portion of the data for testing. However, the clean parallel corpora don't have time annotation, so there is no easy way to make this split. Therefore we decided to just create a split ourselves. Each 50th sentence is removed from the corpus and added to a separate test file. The ratio is based on the fact that the Q4/2000 portion would be 3/(16*12-4)=0.016 of the data.
+
+
+\paragraph{Sentence alignment}
+The parallel data is sentence aligned, which means that each line in the source text corresponds to a line in the target text.
+In order for our phrase extraction to work, we want one single English (target) text file to be aligned to all languages.
+
+Our implementation is quite ad hoc, in that it compares the English sides and just discards those lines that are different. This means we discard part of the data, because in the original parallel data sometimes multiple sentences are concatenated in the sentence alignment. This approach could probably be refined to lose less data. 
+
+
+\subsection{}
+
+We run Moses steps 1 and 2 with default setting on all language pairs, to obtain Giza word alignments. 
+
+
+\section{Results}
+%Settings:
+% Pool of languages - large (7 languages), small-same (3 roman languages: French, Italian, Spanish), small-different (3 very different languages: Greek, Danish, Portoguese)
+
+%Idea: only use pruned data for extraction - prevent sparsity
+
+%Relative size of the data after preprocessing
+%Size of the phrase tables for different settings
+%Decoding performance
+
+
+\section{Conclusion}
+
+% Future: apllicable for parallel data from different domains, so not language-parallel (is that possible?)
+A major drawback of our approach is the constraint that the multi-parallel corpus has to be aligned, so that the target-sides coincide. Apart from the possibility to improve the tool for extracting such data from a corpus like europarl, it may be interesting to investigate the possibility to abandon this constraint at all. For instance, by using an existing (bilingually trained) system to provide translations for the English sentences in other languages. This would however severely aggravate the training of the model, so the question is whether the reduction in phrase table expected from our method is worth it.
+%We can say more about thit once we actually have results..
+
 
 \begin{thebibliography}{}
 
