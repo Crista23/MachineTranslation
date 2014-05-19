@@ -56,14 +56,13 @@ def alignEuroparlCorpora(fors, output):
 
 def main():
     corpus = "home/sveldhoen/MTProject3/data/corpusClean/"
+    fors = ["el","da","de","es","fr","it","nl","pt"]
     global engFiles
     engFiles = [corpus+f+"-en.en" for f in fors]
     global ForFiles
     forFiles = [corpus+f+"-en."+f for f in fors]
 
     output = "home/sveldhoen/MTProject3/data/corpusAligned/"
-    fors = ["el","da","de","es","fr","it","nl","pt"]
-
 
     alignEuroparlCorpora(fors, output)
 
