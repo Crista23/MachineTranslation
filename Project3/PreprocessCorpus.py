@@ -54,7 +54,7 @@ def getCorrespondingLines(engLine):
                 engFile2Index = engFile2LastRetrievedIndex + i
                 engFile2LastRetrievedIndex = engFile2Index
                 break
-        
+        """
         for j, line in enumerate(islice(enf3, engFile3LastRetrievedIndex, engFile3LastRetrievedIndex + noOfSkippedLines * 3)):
         #for j, line in enumerate(islice(enf3, engFile3LastRetrievedIndex, None)):
             line = line.replace("\n", "").strip()
@@ -63,8 +63,9 @@ def getCorrespondingLines(engLine):
                 engFile3Index = engFile3LastRetrievedIndex + j
                 engFile3LastRetrievedIndex = engFile3Index
                 break
-    
-    return engFile2Index, engFile3Index
+        """
+    #return engFile2Index, engFile3Index
+    return engFile2Index, 1
 
 def alignEuroparlCorpora(engFile1):
     global noOfSkippedLines
@@ -89,8 +90,8 @@ def alignEuroparlCorpora(engFile1):
                     fAlignedFrenchFile.write(getLine(i, "fr") + "\n")
                     print getLine(engFile2Index, "nl")
                     fAlignedDutchFile.write(getLine(engFile2Index, "nl") + "\n")
-                    print getLine(engFile3Index, "ro")
-                    fAlignedRomanianFile.write(getLine(engFile3Index, "ro") + "\n")
+                    #print getLine(engFile3Index, "ro")
+                    #fAlignedRomanianFile.write(getLine(engFile3Index, "ro") + "\n")
                 else:
                     noOfSkippedLines += 1
                 
