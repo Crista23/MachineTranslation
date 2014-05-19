@@ -3,13 +3,13 @@ from itertools import islice
 
 csv.field_size_limit(sys.maxsize)
 
-engFile1 = "MTProject3/data/fr-en/europarl-v7.fr-en.en"
-engFile2 = "MTProject3/data/nl-en/europarl-v7.nl-en.en"
-engFile3 = "MTProject3/data/ro-en/europarl-v7.ro-en.en"
+engFile1 = "EnFile1.txt"
+engFile2 = "EnFile2.txt"
+engFile3 = "EnFile3.txt"
 
-frFile = "MTProject3/data/fr-en/europarl-v7.fr-en.fr"
-nlFile = "MTProject3/data/nl-en/europarl-v7.nl-en.nl"
-roFile = "MTProject3/data/ro-en/europarl-v7.ro-en.ro"
+frFile = "ForFile1.txt"
+nlFile = "ForFile2.txt"
+roFile = "ForFile3.txt"
 
 engFile2LastRetrievedIndex = 0
 engFile3LastRetrievedIndex = 0
@@ -46,17 +46,19 @@ def getCorrespondingLines(engLine):
     global noOfSkippedLines
     
     with open(engFile2, 'rb') as enf2, open(engFile3, 'rb') as enf3:
-        for i, line in enumerate(islice(enf2, engFile2LastRetrievedIndex, engFile2LastRetrievedIndex + noOfSkippedLines * 3)):
-        #for i, line in enumerate(islice(enf2, engFile2LastRetrievedIndex, None)):
+        #for i, line in enumerate(islice(enf2, engFile2LastRetrievedIndex, engFile2LastRetrievedIndex + noOfSkippedLines * 3)):
+        for i, line in enumerate(islice(enf2, engFile2LastRetrievedIndex, None)):
             line = line.replace("\n", "").strip()
+            print "lines is: " + line
             if(engLine == line):
+                print "engline is: " + engLine
                 # get the index of the first occurence
                 engFile2Index = engFile2LastRetrievedIndex + i
                 engFile2LastRetrievedIndex = engFile2Index
                 break
         
-        for j, line in enumerate(islice(enf3, engFile3LastRetrievedIndex, engFile3LastRetrievedIndex + noOfSkippedLines * 3)):
-        #for j, line in enumerate(islice(enf3, engFile3LastRetrievedIndex, None)):
+        #for j, line in enumerate(islice(enf3, engFile3LastRetrievedIndex, engFile3LastRetrievedIndex + noOfSkippedLines * 3)):
+        for j, line in enumerate(islice(enf3, engFile3LastRetrievedIndex, None)):
             line = line.replace("\n", "").strip()
             if(engLine == line):
                 # get the index of the first occurence
@@ -79,7 +81,9 @@ def alignEuroparlCorpora(engFile1):
         for i, line in enumerate(lines):
             if (line != []):
                 line = line[0].strip()
+                print line
                 engFile2Index, engFile3Index = getCorrespondingLines(line)
+                print engFile2Index, engFile3Index
                 if(engFile2Index != -1 and engFile3Index != -1):
                     noOfSkippedLines = 1
                     print "|" + line + "|"
