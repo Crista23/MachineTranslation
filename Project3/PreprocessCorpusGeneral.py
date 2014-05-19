@@ -45,6 +45,8 @@ def alignEuroparlCorpora(fors, output):
                     noOfSkippedLines = 1
                     print "|" + line + "|"
                     print "RETRIEVE LINES"
+                    with open(output+"en.en", 'a') as out:
+		         out.write(line + "\n")  
                     for f in fors:
                         outLine = getLine(i, f)
                         outFile = output+f+"-en."+f
@@ -55,7 +57,7 @@ def alignEuroparlCorpora(fors, output):
 def main():
     global corpus
     corpus = "/home/sveldhoen/MTProject3/data/corpusClean/"
-    fors = ["el","da","de","es","fr","it","nl","pt"]
+    fors = ["da","de","es","fr","it","nl","pt"]
     global engFiles
     engFiles = [corpus+f+"-en.en" for f in fors]
     global ForFiles
