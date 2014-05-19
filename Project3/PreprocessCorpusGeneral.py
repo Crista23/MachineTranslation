@@ -35,7 +35,7 @@ def alignEuroparlCorpora(fors, output):
         for i, line in enumerate(lines):
             if (line != []):
                 line = line[0].strip()
-                indices = getCorrespondingLines(line)
+                indices = getCorrespondingLines(engLine, retrieved, noOfSkippedLines):
 
                 if (-1 in indices):
                     noOfSkippedLines += 1
