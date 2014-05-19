@@ -13,9 +13,9 @@ def getLine(lineIndex, language):
     return line
 
 def getCorrespondingLines(engLine, retrieved, noOfSkippedLines):
-    indices = [-1]*len(fors)
+    indices = [-1]*len(retrieved)
     indices[0]=0
-    for j in range(1,len(fors)):
+    for j in range(1,len(retrieved)):
         with open(engFiles[j], 'rb') as enf:
              for i, line in enumerate(islice(enf, retrieved[j], retrieved[j] + noOfSkippedLines * 3)):
                  line = line.replace("\n", "").strip()
@@ -35,7 +35,7 @@ def alignEuroparlCorpora(fors, output):
         for i, line in enumerate(lines):
             if (line != []):
                 line = line[0].strip()
-                indices = getCorrespondingLines(engLine, retrieved, noOfSkippedLines):
+                indices = getCorrespondingLines(line, retrieved, noOfSkippedLines)
 
                 if (-1 in indices):
                     noOfSkippedLines += 1
@@ -45,24 +45,23 @@ def alignEuroparlCorpora(fors, output):
                     noOfSkippedLines = 1
                     print "|" + line + "|"
                     print "RETRIEVE LINES"
-                    for j in fors:
+                    for f in fors:
                         outLine = getLine(i, f)
                         outFile = output+f+"-en."+f
                         with open(outFile, 'a') as out:
                              out.write(outLine + "\n")
                              print outLine
-                else:
-                    noOfSkippedLines += 1
 
 def main():
-    corpus = "home/sveldhoen/MTProject3/data/corpusClean/"
+    global corpus
+    corpus = "/home/sveldhoen/MTProject3/data/corpusClean/"
     fors = ["el","da","de","es","fr","it","nl","pt"]
     global engFiles
     engFiles = [corpus+f+"-en.en" for f in fors]
     global ForFiles
     forFiles = [corpus+f+"-en."+f for f in fors]
 
-    output = "home/sveldhoen/MTProject3/data/corpusAligned/"
+    output = "/home/sveldhoen/MTProject3/data/corpusAligned/"
 
     alignEuroparlCorpora(fors, output)
 
