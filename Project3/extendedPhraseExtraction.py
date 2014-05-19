@@ -70,6 +70,8 @@ def extractPhrases(eLine, fLines, efLines, feLines, size, phraseTable):
                            #write to the phrase table (append)
                            with open(phraseTable, "a") as myfile:
                                myfile.write(engPhrase+ ' ||| '+forPhrase+' |||'+alignment+'\n')
+                               # phrase table file format:
+                               #<source phrase> ||| <target phrase> ||| <alignment points>
                        fe +=1
                    fs -= 1
 
