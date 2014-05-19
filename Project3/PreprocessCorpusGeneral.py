@@ -29,11 +29,6 @@ def getCorrespondingLines(engLine, retrieved, noOfSkippedLines):
 def alignEuroparlCorpora(fors, output):
     retrieved = [0] * len(fors)
     noOfSkippedLines = 1
-    #output files
-#    fAlignedEnglishFile = open("MTProject3/data/fr-en/europarl-v7-alignedEN.en-en.en", 'w')
-#    fAlignedFrenchFile = open("MTProject3/data/fr-en/europarl-v7-alignedFR.fr-en.fr", 'w')
-#    fAlignedDutchFile = open("MTProject3/data/nl-en/europarl-v7-alignedNL.nl-en.nl", 'w')
-#    fAlignedRomanianFile = open("MTProject3/data/ro-en/europarl-v7-alignedRO.ro-en.ro", 'w')
 
     with open(engFiles[0], 'rb') as engFile1:
         lines = csv.reader(engFile1, delimiter='\n')
@@ -45,8 +40,8 @@ def alignEuroparlCorpora(fors, output):
                 if (-1 in indices):
                     noOfSkippedLines += 1
                 else:
-                    retrieved = indices
                     retrieved[0] = i
+                    retrieved[1:] = indices[1:]
                     noOfSkippedLines = 1
                     print "|" + line + "|"
                     print "RETRIEVE LINES"
