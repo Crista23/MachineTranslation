@@ -98,9 +98,8 @@ The symmetrized alignments are used for reducing the space of phrase pairs. That
 
 \subsection{Data}
 
-We use the Europarl version 7 parallel data for English to respectively French, German, Danish, Italian, Dutch, Spanish, Greek
- and Portuguese. This choice was based on the fact that parallel data exists for parliament proceedings of the same time interval for these languages, so that they are in a sense parallel beyond language level.
-%Greek? We excluded Greek because of the following remark: `` Some recent Greek data has only parts of transcripts in the files. "
+We use the Europarl version 7 parallel data for English to respectively French, German, Danish, Italian, Dutch, Spanish, and Portuguese. This choice was based on the fact that parallel data exists for parliament proceedings of the same time interval for these languages, so that they are in a sense parallel beyond language level.
+We excluded Greek because of the following remark: `` Some recent Greek data has only parts of transcripts in the files. " Moreover, the Greek data was not in a readable format, because of the deviant alphabet.
 
 We use a script that comes with the Moses installation for initial preprocessing. It discards empty lines and lines with sentences that exceed a length threshold. Furthermore, all text is lowercased.
 
