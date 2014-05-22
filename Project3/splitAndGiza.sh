@@ -18,6 +18,12 @@ TARGET=en
 SOURCES=(da de es fr it nl pt)
 
 #Split into test and train set:
+for SOURCE in ${SOURCES[*]};
+do
+  mv $CORPUS/*.$SOURCE $CORPUS/corpusAligned.$SOURCE
+done
+mv $CORPUS/*.$TARGET $CORPUS/corpusAligned.$TARGET
+
 echo "Split corpus in test and train"
 /bin/bash ./splitCorpus.sh $CORPUS test
 
@@ -29,11 +35,10 @@ do
   --parallel     \
   -external-bin-dir /apps/smt_tools/alignment/mgizapp-0.7.3/manual-compile \
   --root-dir $ROOT \
-  --corpus $CORPUS/training/corpus  \
+  --corpus $CORPUS/training/corpusAligned  \
   --f $SOURCE    \
   --e $TARGET    \
   --corpus-dir $CORPUSDIR/$SOURCE-$TARGET          \
-  --lexical-dir $MODELDIR/$SOURCE-$TARGET          \
   --model-dir $MODELDIR/$SOURCE-$TARGET            \
   --extract-file $MODELDIR/$SOURCE-$TARGET/extract \
   --giza-f2e $GIZADIR/$SOURCE-$TARGET \
@@ -41,8 +46,8 @@ do
   --first-step 1 \
   --last-step 2  \
   -mgiza -mgiza-cpus 4
- Now you have Giza Viterbi alignments
- Run different symmetrization heuristics:
+# Now you have Giza Viterbi alignments
+# Run different symmetrization heuristics:
   echo "Giza's viterbi alignments obtained"
   for al in intersect union grow-diag-final;
   do
@@ -51,17 +56,16 @@ do
     --parallel     \
     -external-bin-dir /apps/smt_tools/alignment/mgizapp-0.7.3/manual-compile \
     --root-dir $MODEL \
-    --corpus $CORPUS/training/corpus  \
+    --corpus $CORPUS/training/corpusAligned  \
     --f $SOURCE    \
     --e $TARGET    \
-  --corpus-dir $CORPUSDIR/$SOURCE-$TARGET          \
-  --lexical-dir $MODELDIR/$SOURCE-$TARGET          \
-  --model-dir $MODELDIR/$SOURCE-$TARGET            \
-  --extract-file $MODELDIR/$SOURCE-$TARGET/extract \
-  --giza-f2e $GIZADIR/$SOURCE-$TARGET \
-  --giza-e2f $GIZADIR/$TARGET-$SOURCE \    --first-step 3 \
+    --corpus-dir $CORPUSDIR/$SOURCE-$TARGET          \
+    --model-dir $MODELDIR/$SOURCE-$TARGET            \
+    --extract-file $MODELDIR/$SOURCE-$TARGET/extract \
+    --giza-f2e $GIZADIR/$SOURCE-$TARGET \
+    --giza-e2f $GIZADIR/$TARGET-$SOURCE \    --first-step 3 \
     --last-step 3  \
-    -mgiza -mgiza-cpus 4
+    -mgiza -mgiza-cpus 4 \
     --alignment $al
   done
 done
@@ -69,5 +73,5 @@ done
 # Split the training corpus,
 # and accordingly the giza alignments,
 # into train and heldout
-bash splitCorpus.sh $CORPUS/train heldout
+bash splitCorpus.sh $CORPUS/training heldout
 bash splitCorpus.sh $GIZA heldout
