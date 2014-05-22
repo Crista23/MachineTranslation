@@ -1,3 +1,24 @@
+
+
+def main():
+    root = "/sveldhoen/MTProject3/"
+    realCorpus = "/sveldhoen/MTProject3/data/corpusMiniTest/"
+    corpus = realCorpus+"/training/training"
+#    corpus = realCorpus+"/training/heldout"
+
+    root = sys.argv[0]
+    sources = sys.argv[1:]
+    for source in sources:
+        forFile = root+"/"
+
+    enFile
+    forFiles
+    alFiles
+    size = 7
+    extractAllPhrases(eFile, fFiles, alFiles, size)
+
+
+
 def extractAllPhrases(eFile, fFiles, alFiles, size):
     # here the file descriptors are stored:
     als = []
