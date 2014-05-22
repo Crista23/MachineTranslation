@@ -34,6 +34,9 @@
 
 \maketitle
 
+\begin{abstract}
+In this paper we continue to extend upon our previous assignment by building a phrase pair extraction tool that would use evidence from aligned parallel corpora. Unlike in our previous work where we would only use parallel corpora consisting of two languages, this time we use evidence from multilingual parallel aligned corpora made available by Europarl. We investigate how word alignments between several languages can be of use in extracting consistent phrase pairs along with their conditional and joint probabilities and consider how word alignment symmetrization can be improved from multilingual word alignments of the same target sentence. 
+\end{abstract}
 
 \section{Introduction}
 Phrase-based statistical machine translation relies on estimates of translation probabilities for pairs of phrases, stored in a so-called phrase table.
@@ -43,11 +46,9 @@ Therefore, we need to restrict this set in some way, to keep only useful/ meanin
 In the approach we took in the previous assignment, the reduction was based on Giza++ output: only those phrase pairs that were consistent with symmetrized word alignments were added to the phrase table. This is a standard approach, that yields a large reduction and proves useful for translation, obtaining for instance a BLEU score of 24.68 in our previous assignment \cite{previous}.
 %But the MT community has moved forward, and can do better now.
 
-The possibility that we aim to investigate in this project, is to use multi-parallel corpora. These data consist of documents in more than two languages with aligned sentences. The process of incorporating evidence from multilingual data in a single system is called \emph{triangulation}. 
+The possibility that we aim to investigate in this project, is to use multi-parallel corpora. These data consist of documents in more than two languages with aligned sentences. The process of incorporating evidence from multilingual data in a single system is called \emph{triangulation}, and presents the advantage of using a wider range of parallel corpora for training. 
 
 \section{Related work}
-
-In \cite{johnson} the phrase tables  are filtered
 
 %Chen, Eisele and Kay 
 Two methods are presented in \cite{chen} to filter the phrase table for a language pair% which we will dubb \emph{source-target}
@@ -60,6 +61,10 @@ Method 2 is somewhat more lenient, in that it looks at the words occurring in th
 
 % Cohn and Lapata
 The authors of \cite{cohn} focus less on reducing the phrase tables, but use triangulation to obtain high quality phrase tables from multilingual data, even if they are not from the same corpus. They use a summation over several intermediate languages to form a probability estimate: $p(s|t)=\sum_i p(s|i)p(i|t)$. Interestingly, the triangulated phrase table is trained separate from the standard phrase table, so that it can be used as a distinct feature in decoding.
+
+%Johnson
+In \cite{Johnson} the bulk of phrase table is reduced based on the significance testing of phrase pair co-occurence in the parallel corpus. The authors present two significance testing methods, namely Chi-squared and Fisher exact test, and experiment with different pruning threshold values ranging from 14 to 25. They outline that while the savings in terms of number of phrases discarded are considerable, the translation quality as measured by the BLEU score is preserved, and even more surprisingly it can even increase, making their approach a valuable contribution to the field of machine translation.
+
 
 %\section{Goals}
 %In this project we are planning to build a phrase pair extraction tool for phrases of up to length 7 that would use evidence from multilingual aligned corpora. To achieve our goal we aim to use Europarl % cite EUroparl
@@ -112,6 +117,8 @@ In order for our phrase extraction to work, we want one single English (target) 
 
 Our implementation is quite ad hoc, in that it compares the English sides and just discards those lines that are different. This means we discard part of the data, because in the original parallel data sometimes multiple sentences are concatenated in the sentence alignment. This approach could probably be refined to lose less data. 
 
+For a given English file that we pick randomly, we keep only those sentences that are present in the other English files as well, with the aim to identify common sentences in all English files from the parallel corpora. For each of these sentences we preserve the index of the occurrence so that we can retrieve the corresponding translations from the foreign files found at the very same position. For computation efficiency reasons, instead of looping though all the lines in the foreign file, which would take a lot of time, we prefer to keep track of the last retrieved position $i_l$ from the English file and count the number of lines $n_s$ skipped since then to search for the corresponding foreign phrase inside a window defined as $i_l+n_s*3$. We chose 3 as a safe margin leaving from the premises that we include all the sentences in the neighborhood of the expected index. Thus we report time and memory gains in the preprocessing step of our corpus.
+
 
 \subsection{}
 
@@ -132,7 +139,7 @@ We run Moses steps 1 and 2 with default setting on all language pairs, to obtain
 \section{Conclusion}
 
 % Future: apllicable for parallel data from different domains, so not language-parallel (is that possible?)
-A major drawback of our approach is the constraint that the multi-parallel corpus has to be aligned, so that the target-sides coincide. Apart from the possibility to improve the tool for extracting such data from a corpus like europarl, it may be interesting to investigate the possibility to abandon this constraint at all. For instance, by using an existing (bilingually trained) system to provide translations for the English sentences in other languages. This would however severely aggravate the training of the model, so the question is whether the reduction in phrase table expected from our method is worth it.
+A major drawback of our approach is the constraint that the multi-parallel corpus has to be aligned, so that the target-sides coincide. Apart from the possibility to improve the tool for extracting such data from a corpus like Europarl, it may be interesting to investigate the possibility to abandon this constraint at all. For instance, by using an existing (bilingually trained) system to provide translations for the English sentences in other languages. This would however severely aggravate the training of the model, so the question is whether the reduction in phrase table expected from our method is worth it.
 %We can say more about thit once we actually have results..
 
 
@@ -156,6 +163,11 @@ A major drawback of our approach is the constraint that the multi-parallel corpu
 \newblock{\em Machine translation by triangulation: Making effective use of multi-parallel corpora},
 \newblock {ANNUAL MEETING-ASSOCIATION FOR COMPUTATIONAL LINGUISTICS}
 
+\bibitem[4]{Johnson}
+{J Howard Johnson, Joel Martin, George Foster and Roland Kuhn},
+\newblock{2007}.
+\newblock{\em Improving Translation Quality by Discarding Most of the Phrasetable},
+\newblock {In Proceedings of EMNLP-CoNLL}
 
 %%\bibitem[\protect\citename{Gusfield}1997]{Gusfield:97}
 %%Dan Gusfield.
