@@ -1,0 +1,8 @@
+sed 's/\r//' MosesBaselineJohnson.sh > NewMosesBaselineJohnson.sh
+bash NewMosesBaselineJohnson.sh
+
+- read from my folder
+  bash NewMosesBaselineJohnson.sh /home/ggarbacea/SSLP /home/ggarbacea/SSLP/Project3/CorpusAligned
+
+- read from Sara's folder
+  bash NewMosesBaselineJohnson.sh /home/ggarbacea/SSLP /home/sveldhoen/MTProject3/data/corpusAligned
