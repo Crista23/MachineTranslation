@@ -4,23 +4,6 @@ run=$3-$source-$target
 root=/home/sveldhoen/MTProject3/
 data=$root/data/$source-$target
 
-#Preprocess the corpus (if necessary)
-# i.e.: lowercase, remove empty lines, remove long sentences (50<)
-if [-f $data/cleanLC.$target];
-then
-   echo "Corpus in place, start Moses"
-else
-   echo "Preprocessing corpus..."
-   /apps/smt_tools/decoders/mosesdecoder/scripts/training/clean-corpus-n.perl \
-   -lc \
-   $data/europarl-v7.$source-$target\
-   $source $target \
-   $data/cleanLC \
-   1 50
-   "Done, start Moses"
-fi
-
-
 #Get Giza alignments
 
 /apps/smt_tools/decoders/mosesdecoder/scripts/training/train-model.perl     \
