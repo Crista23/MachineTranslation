@@ -30,6 +30,7 @@ do
 	echo "Source language is:"
 	echo $SOURCE
 	
+	echo "Train Moses"
 	#run baseline on train
 	/apps/smt_tools/decoders/mosesdecoder/scripts/training/train-model.perl \
 	-external-bin-dir /apps/smt_tools/alignment/mgizapp-0.7.3/manual-compile \
@@ -45,22 +46,17 @@ do
 	--first-step 3 \
 	--last-step 9
 	
-	echo "Evaluation begins"
+	echo "Translation begins"
 	/apps/smt_tools/decoders/mosesdecoder/bin/moses \
-	-f "$MODELDIR/$SOURCE-$TARGET/moses.ini" 				#"$rootdir/MosesBaseline/$source/model/moses.ini" \ 	 			#/home/ggarbacea/SSLP/MosesResults/model/moses.ini \
-	< "$CORPUS/test/corpusAligned.$SOURCE"   				#"$testCorpus/p2_test.$source" \
-	> "$TRANSLATIONDIR/translated$SOURCE-$TARGET.$TARGET"   #"$translationLocation/translatedtest$source-to$target.$target" \ 	#/home/ggarbacea/SSLP/TranslationResults/translatedtestNLtoENG.en \
+	-f "$MODELDIR/$SOURCE-$TARGET/moses.ini" 				
+	< "$CORPUS/test/corpusAligned.$SOURCE"   				
+	> "$TRANSLATIONDIR/translated$SOURCE-$TARGET.$TARGET"
 	2> "$TRANSLATIONDIR/translation$SOURCE-$TARGET.out"
 	
 	echo "Compute Bleu scores"
-	#ask Moses to translate
-	#/apps/smt_tools/decoders/mosesdecoder/bin/moses \
-	#-f "$rootdir/MosesBaseline/$source/model/moses.ini" \ 	 			#/home/ggarbacea/SSLP/MosesResults/model/moses.ini \
-	#< "$testCorpus/corpus.$source" \
-	#> "$translationLocation/translatedtest$source-to$target.$target" \ 	#/home/ggarbacea/SSLP/TranslationResults/translatedtestNLtoENG.en \
-	#2> "$translationLocation/$source-translation.out" 					#/home/ggarbacea/SSLP/TranslationResults/translation.out
-	
-	#evaluate on test
+	#/apps/smt_tools/decoders/mosesdecoder/scripts/generic/multi-bleu.perl \
+	#"$CORPUS/test/corpusAligned.$TARGET"  
+	#< "$TRANSLATIONDIR/translated$SOURCE-$TARGET.$TARGET"	
 	
 done
 
