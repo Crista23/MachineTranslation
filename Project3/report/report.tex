@@ -35,7 +35,9 @@
 \maketitle
 
 \begin{abstract}
-In this paper we continue to extend upon our previous assignment by building a phrase pair extraction tool that would use evidence from aligned parallel corpora. Unlike in our previous work where we would only use parallel corpora consisting of two languages, this time we use evidence from multilingual parallel aligned corpora made available by Europarl. We investigate how word alignments between several languages can be of use in extracting consistent phrase pairs along with their conditional and joint probabilities and consider how word alignment symmetrization can be improved from multilingual word alignments of the same target sentence. 
+In this paper we continue to extend upon our previous assignment by building a phrase pair extraction tool that would use evidence from aligned parallel corpora. Unlike in our previous work where we would only use parallel corpora consisting of two languages, this time we use evidence from multilingual parallel aligned corpora made available by Europarl. We investigate how word alignments between several languages can be of use in extracting consistent phrase pairs. %along with their conditional and joint probabilities 
+%and consider how word alignment symmetrization can be improved from multilingual word alignments of the same target sentence. 
+We present an algorithm to do so, and experimented with different symmetrization heuristics to be used as an input. Furthermore, we investigated how the choice of reference languages influences improvement. We compare our results to a baseline system, and to a different approach to phrase table filtering, based on significance testing.
 \end{abstract}
 
 \section{Introduction}
@@ -104,7 +106,7 @@ The symmetrized alignments are used for reducing the space of phrase pairs. That
 \subsection{Data}
 
 We use the Europarl version 7 parallel data for English to respectively French, German, Danish, Italian, Dutch, Spanish, and Portuguese. This choice was based on the fact that parallel data exists for parliament proceedings of the same time interval for these languages, so that they are in a sense parallel beyond language level.
-We excluded Greek because of the following remark: `` Some recent Greek data has only parts of transcripts in the files. " Moreover, the Greek data was not in a readable format, because of the deviant alphabet.
+We excluded Greek because of the following remark: ``Some recent Greek data has only parts of transcripts in the files." Moreover, the Greek data was not in a readable format, because of the deviant alphabet.
 
 We use a script that comes with the Moses installation for initial preprocessing. It discards empty lines and lines with sentences that exceed a length threshold. Furthermore, all text is lowercased.
 
@@ -118,6 +120,7 @@ In order for our phrase extraction to work, we want one single English (target) 
 Our implementation is quite ad hoc, in that it compares the English sides and just discards those lines that are different. This means we discard part of the data, because in the original parallel data sometimes multiple sentences are concatenated in the sentence alignment. This approach could probably be refined to lose less data. 
 
 For a given English file that we pick randomly, we keep only those sentences that are present in the other English files as well, with the aim to identify common sentences in all English files from the parallel corpora. For each of these sentences we preserve the index of the occurrence so that we can retrieve the corresponding translations from the foreign files found at the very same position. For computation efficiency reasons, instead of looping though all the lines in the foreign file, which would take a lot of time, we prefer to keep track of the last retrieved position $i_l$ from the English file and count the number of lines $n_s$ skipped since then to search for the corresponding foreign phrase inside a window defined as $i_l+n_s*3$. We chose 3 as a safe margin leaving from the premises that we include all the sentences in the neighborhood of the expected index. Thus we report time and memory gains in the preprocessing step of our corpus.
+%I think our algorithm is still not very efficient, so I wouldn't mention time and memory gains explicitly
 
 
 \subsection{}

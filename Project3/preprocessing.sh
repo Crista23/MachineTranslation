@@ -9,7 +9,7 @@ corpusReady=/home/sveldhoen/MTProject3/data/corpusReady
 #   remove sentences that are too long
 
 target=en
-sources=(da de el es fr it en nl pt)
+sources=(da de el es fr it nl pt)
 
 for source in ${sources[*]}
 do
