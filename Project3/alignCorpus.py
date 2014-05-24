@@ -50,7 +50,7 @@ def alignEuroparlCorpora(fors, output):
  #                   print "|" + line + "|"
 #                    print "RETRIEVE LINES"
                     with open(output+"en.en", 'a') as out:
-		         out.write(line + "\n")  
+		         out.write(line + "\n")
                     for f in fors:
                         outLine = getLine(i, f)
                         outFile = output+f+"-en."+f
@@ -67,7 +67,7 @@ def main():
     global ForFiles
     forFiles = [corpus+f+"-en."+f for f in fors]
 
-    output = "/home/sveldhoen/MTProject3/data/corpusAligned2/"
+    output = "/home/sveldhoen/MTProject3/data/corpusAligned3/"
 
     alignEuroparlCorpora(fors, output)
 
