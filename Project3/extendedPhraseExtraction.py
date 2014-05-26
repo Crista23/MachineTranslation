@@ -1,63 +1,22 @@
 
 
 def main():
-    root = "/sveldhoen/MTProject3/"
-    realCorpus = "/sveldhoen/MTProject3/data/corpusMiniTest/"
-    corpus = realCorpus+"/training/training"
-#    corpus = realCorpus+"/training/heldout"
+# $ELINE $FLINES $ALLINES
 
-    root = sys.argv[0]
-    sources = sys.argv[1:]
-    for source in sources:
-        forFile = root+"/"
+    eline = sysargv[0]
+    eline = eline.split()
+    flines = sys.argv[1]
+    flines = flines.split(',')
+    flines = [fline.split() for fline in flines]
+    allines = sys.argv[2]
+    allines = allines.split(',')
+    allines = [alline.split() for alline in allines]
+    output = sys.argv[3]
+    extractPhrases(eLine, fLines, alLines, size)
 
-    enFile
-    forFiles
-    alFiles
-    size = 7
     extractAllPhrases(eFile, fFiles, alFiles, size)
 
 
-
-def extractAllPhrases(eFile, fFiles, alFiles, size):
-    # here the file descriptors are stored:
-    als = []
-    frs = []
-    try:
-        for fn in alFiles:
-            try:
-                als.append(open(fn),'r')
-            except IOError:
-                print "Problem opening "+fn
-        for fn in fFiles:
-            try:
-                frs.append(open(fn),'r')
-            except IOError:
-                print "Problem opening "+fn
-        try:
-            open(eFile, 'r') as en
-        except IOError:
-            print "Problem opening "+eFile
-
-
-        enLine = en.readline()
-        fLines =  [fr.readline() for fr in frs]
-        alLines = [al.readline() for al in als]
-
-
-    finally:
-        for fd in fds:
-            fd.close()
-        for fr in fdr:
-            fr.close()
-        en.close()
-
-
-    with open(feFile, 'r') as fe, open(efFile, 'r') as ef, open(eFile, 'r') as e, open(fFile, 'r') as f:
-         for feLine, efLine, eLine, fLine in izip(fe, ef, e, f):
-             eLine.split()
-             feLine.split()
-             efLine.split()
 
 def getForeignWindow(e_s,e_e,alignment):
     #initialize f_s and f_e the extreme values
