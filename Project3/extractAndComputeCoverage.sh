@@ -2,7 +2,8 @@
 CORPUS=/home/sveldhoen/MTProject3/data/corpusMiniTest/training
 
 TARGET=en
-SOURCES=(da de fr it nl pt)
+SOURCES=(de fr it nl pt)
+#SOURCES=(da de es fr it nl pt)
 FOCUS=fr
 MIX=(it nl)
 SAME=(it pt)
@@ -15,7 +16,7 @@ KINDS=(union intersect grow-diag-final)
 EXPERIMENT=mini
 
 ROOT=/home/sveldhoen/MTProject3/$EXPERIMENT
-COVERAGE=$ROOT/COVERAGE
+COVERAGE=$ROOT/coverage
 
 mkdir -p $COVERAGE/corpus
 mkdir -p $COVERAGE/alignments
@@ -29,7 +30,7 @@ bash splitCorpus.sh $COVERAGE/corpus heldout
 # And accordingly split the aignment files
 for SOURCE in ${SOURCES[*]};
 do
-  for KIND int ${KINDS[*]};
+  for KIND in ${KINDS[*]};
   do
     cp $ROOT/model/$SOURCE-$TARGET/aligned.$KIND $COVERAGE/alignments/$SOURCE-$TARGET.aligned.$KIND
   done
@@ -39,19 +40,24 @@ bash splitCorpus.sh $COVERAGE/alignments heldout
 
 
 echo 'EXPERIMENT: union/ intersection/ grow-diag-final'
-for $KIND in ${KINDS[*]};
+for KIND in ${KINDS[*]};
 do
-  for i in $(seq 1 50);
+  for i in $(seq 0 2);
   do
-    ELINE=$(head -i $COVERAGE/corpus/training/corpusAligned.$TARGET | tail -1)
-    FLINES=$(head -i $COVERAGE/corpus/training/corpusAligned.$FOCUS | tail -1)
-    ALLINES=$(head -i $COVERAGE/alignments/$FOCUS-$TARGET.alignedg.grow-diag-final | tail -1)
+    ELINE=$(head -$i $COVERAGE/corpus/training/corpusAligned.$TARGET | tail -1)
+    FLINES=$(head -$i $COVERAGE/corpus/training/corpusAligned.$FOCUS | tail -1)
+    ALLINES=$(head -$i $COVERAGE/alignments/$FOCUS-$TARGET.aligned.grow-diag-final | tail -1)
     for SOURCE in ${MIX[*]};
     do
-      FLINES+=,$(head -i $COVERAGE/corpus/training/corpusAligned.$SOURCE | tail -1)
-      ALLINES+=,$(head -i $COVERAGE/alignments/$SOURCE-$TARGET.aligned.$KIND | tail -1)
+      FLINES+=@@$(head -$i $COVERAGE/corpus/training/corpusAligned.$SOURCE | tail -1)
+      ALLINES+=,$(head -$i $COVERAGE/alignments/$SOURCE-$TARGET.aligned.$KIND | tail -1)
     done
-    python extendedPhraseExtraction $ELINE $FLINES $ALLINES $COVERAGE/phrasetables/phrases.fr-en.$KIND.mix
+#    echo "eline is $ELINE\n fLines is $FLINES \n alLines is $ALLINES"
+    python extendedPhraseExtraction.py \
+ 	"$ELINE" \
+	"$FLINES" \
+	"$ALLINES" \ 
+	$COVERAGE/phrasetables/phrases.fr-en.$KIND.mix
   done
 done
 
