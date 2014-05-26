@@ -23,7 +23,7 @@ do
 	--root-dir $ROOT
 	echo "Translation begins"
 	/apps/smt_tools/decoders/mosesdecoder/bin/moses \
-	-f "$MODELDIR/$SOURCE-$TARGET/moses.ini" \			
+	-f "$MODELDIR/moses.ini" \			
 	< "$CORPUS/test/corpusAligned.$SOURCE"   \				
 	> "$TRANSLATIONDIR/translated$SOURCE-$TARGET.$TARGET" \
 	2> "$TRANSLATIONDIR/translation$SOURCE-$TARGET.out"
