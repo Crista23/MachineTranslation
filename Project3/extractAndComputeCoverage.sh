@@ -1,19 +1,19 @@
 #CORPUS=/home/sveldhoen/MTProject3/data/corpusAligned3/training
-CORPUS=/home/sveldhoen/MTProject3/data/corpusMiniTest/training
+CORPUS=/home/sveldhoen/MTProject3/data/corpusMini23
 
 TARGET=en
-SOURCES=(de fr it nl pt)
-#SOURCES=(da de es fr it nl pt)
+SOURCES=(da de es fr it nl)
+# pt)
 FOCUS=fr
 MIX=(it nl)
 SAME=(it pt)
 DIFF=(da nl)
-ALL=(de de it nl pt)
+ALL=(de de es it nl pt)
 KINDS=(union intersect grow-diag-final)
 
 
 #EXPERIMENT=realExperimentWithoutSpanish
-EXPERIMENT=mini
+EXPERIMENT=miniExperimentSara
 
 ROOT=/home/sveldhoen/MTProject3/$EXPERIMENT
 COVERAGE=$ROOT/coverage
@@ -26,6 +26,7 @@ mkdir -p $COVERAGE/phrasetables
 # Split the training corpus into train and heldout
 cp $CORPUS/training/* $COVERAGE/corpus
 bash splitCorpus.sh $COVERAGE/corpus heldout
+echo "split the corpus into train and heldout"
 
 # And accordingly split the aignment files
 for SOURCE in ${SOURCES[*]};
@@ -36,7 +37,7 @@ do
   done
 done
 bash splitCorpus.sh $COVERAGE/alignments heldout
-
+echo "split the alignment files into train and heldout"
 
 
 echo 'EXPERIMENT: union/ intersection/ grow-diag-final'
