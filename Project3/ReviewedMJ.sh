@@ -1,5 +1,5 @@
-CORPUS=/home/sveldhoen/MTProject3/data/corpusMiniTest
-EXPERIMENT=realExperimentCristina
+CORPUS=/home/sveldhoen/MTProject3/data/corpusMini23
+EXPERIMENT=miniExperimentCristina
 ROOT=/home/sveldhoen/MTProject3/$EXPERIMENT
 GIZADIR=$ROOT/giza
 MODELDIR=$ROOT/model

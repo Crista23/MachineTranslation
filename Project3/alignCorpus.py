@@ -17,7 +17,7 @@ def getCorrespondingLines(engLine, retrieved, noOfSkippedLines):
     indices[0]=0
     for j in range(1,len(retrieved)):
         with open(engFiles[j], 'rb') as enf:
-            for i, line in enumerate(islice(enf, retrieved[j], retrieved[j] + noOfSkippedLines * 3)):
+            for i, line in enumerate(islice(enf, retrieved[j], 100 + retrieved[j] + noOfSkippedLines * 2)):
                 line = line.replace("\n", "").strip()
                 if(engLine == line):
                     # get the index of the first occurence
@@ -61,6 +61,7 @@ def alignEuroparlCorpora(fors, output):
                         outLine = getLine(retrieved[languageIndex], f)
                         #outLine = getLine(i, f)
                         outFile = output+f+"-en."+f
+                        #outFile = "corpusAligned." + f
                         with open(outFile, 'a') as out:
                              out.write(outLine + "\n")
                              #print f + " TRANSLATION: "
@@ -71,7 +72,8 @@ def alignEuroparlCorpora(fors, output):
 
 def main():
     global corpus
-    corpus = "/home/sveldhoen/MTProject3/data/corpusClean/"
+    #corpus = "/home/sveldhoen/MTProject3/data/corpusClean/"
+    corpus = "data/corpusClean/"
     #corpus = "corpusClean/"
     fors = ["da","de","es","fr","it","nl","pt"]
     #fors=["da","es"]
@@ -80,7 +82,8 @@ def main():
     global ForFiles
     forFiles = [corpus+f+"-en."+f for f in fors]
 
-    output = "/home/sveldhoen/MTProject3/data/corpusAligned4/"
+    #output = "/home/sveldhoen/MTProject3/data/corpusAligned4/"
+    output = "data/corpusAligned4/"
     #output = "corpusAligned/"
 
     alignEuroparlCorpora(fors, output)
