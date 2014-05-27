@@ -17,7 +17,7 @@ def main():
 #    print eline, flines, allines
     extractPhrases(eline, flines, allines, size, output)
 
--
+
 def getForeignWindow(e_s,e_e, A):
     #initialize f_s and f_e the extreme values
     f_s = len(A)
