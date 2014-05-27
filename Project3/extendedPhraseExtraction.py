@@ -1,11 +1,11 @@
-import sys
+import sys, glob
 
 def main():
 # $ELINE $FLINES $ALLINES $OUTPUT
 #    print str(sys.argv)
     size = 7
     eline = sys.argv[1].strip().split()
-    print "eline is "+str(eline)
+#    print "eline is "+str(eline)
     flines = sys.argv[2].strip().split('@@')
 #    print "flines is "+str(flines)
     flines = [fline.split() for fline in flines]
@@ -13,7 +13,7 @@ def main():
 #    print "allines is "+str(allines)
     output = sys.argv[4]
 #    print "output is "+output
-    print "Going to extract phrases"
+#    print "Going to extract phrases"
 #    print eline, flines, allines
     extractPhrases(eline, flines, allines, size, output)
 
@@ -50,7 +50,7 @@ def extractPhrases(eLine, fLines, alLines, size, phraseTable):
     el = len(e)
     alignments = []
     for i in range(len(fLines)): #iterate over the foreign languages and create alignment matrices
-        print fLines[i]
+#        print fLines[i]
         fl = len(fLines[i])
         alignments.append(getAlignmentMatrix(alLines[i],el,fl))
     A = alignments[0]
@@ -84,11 +84,12 @@ def extractPhrases(eLine, fLines, alLines, size, phraseTable):
                            alignment = ""
                            for i in range(fs, fe):
                                for j in range(e_s,e_e):
-                                   if A[j][i] != 0:
+#				   print 'read A[j][i]: ',i,j
+                                   if A[i][j] != 0:
                                       alignment += ' '+str(i)+'-'+str(j)
                            #write to the phrase table (append)
-                           with open(phraseTable, "a") as myfile:
-                               print "Extracted a phrase pair"
+                           with open(phraseTable, "a+") as myfile:
+#                               print "Extracted a phrase pair"
                                myfile.write(engPhrase+ ' ||| '+forPhrase+' |||'+alignment+'\n')
                                # phrase table file format:
                                #<source phrase> ||| <target phrase> ||| <alignment points>
@@ -119,8 +120,10 @@ def getAlignmentMatrix(alLine, el, fl):
     points = alLine.split()
     alignment = [[0 for col in range(el)] for row in range(fl)]
     for point in points:
-	print "point is "+point
-        e_pos, f_pos = point.split("-")
+#	print "point is "+point
+#       It might be that f-pos and e-pos need to be swapped
+# 	in the next line (only here)
+        f_pos,e_pos = point.split("-")
 	f_pos = int(f_pos)
 	e_pos = int(e_pos)
         alignment[f_pos][e_pos] = 1
