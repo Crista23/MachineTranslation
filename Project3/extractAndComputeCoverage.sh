@@ -40,10 +40,14 @@ bash splitCorpus.sh $COVERAGE/alignments heldout
 
 
 echo 'EXPERIMENT: union/ intersection/ grow-diag-final'
-for KIND in ${KINDS[*]};
-do
-  for i in $(seq 0 2);
+LENGTH=$(cat $COVERAGE/corpus/training/corpusAligned.$TARGET|wc -l)
+#for KIND in ${KINDS[*]};
+KIND=union
+#do
+#  for i in $(seq 0 $LENGTH);
+  for i in $(seq 100 101);
   do
+    echo "line $i"
     ELINE=$(head -$i $COVERAGE/corpus/training/corpusAligned.$TARGET | tail -1)
     FLINES=$(head -$i $COVERAGE/corpus/training/corpusAligned.$FOCUS | tail -1)
     ALLINES=$(head -$i $COVERAGE/alignments/$FOCUS-$TARGET.aligned.grow-diag-final | tail -1)
@@ -52,14 +56,14 @@ do
       FLINES+=@@$(head -$i $COVERAGE/corpus/training/corpusAligned.$SOURCE | tail -1)
       ALLINES+=,$(head -$i $COVERAGE/alignments/$SOURCE-$TARGET.aligned.$KIND | tail -1)
     done
-#    echo "eline is $ELINE\n fLines is $FLINES \n alLines is $ALLINES"
+    echo "eline is $ELINE ### fLines is $FLINES ### alLines is $ALLINES"
     python extendedPhraseExtraction.py \
  	"$ELINE" \
 	"$FLINES" \
-	"$ALLINES" \ 
-	$COVERAGE/phrasetables/phrases.fr-en.$KIND.mix
+	"$ALLINES" \
+	"$COVERAGE/phrasetables/phrases.fr-en.$KIND.mix"
   done
-done
+#done
 
 
 
