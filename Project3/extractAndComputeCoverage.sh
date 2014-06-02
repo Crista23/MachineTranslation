@@ -8,7 +8,7 @@ FOCUS=fr
 MIX=(it nl)
 SAME=(it pt)
 DIFF=(da nl)
-ALL=(de de es it nl pt)
+ALL=(da de es it nl pt)
 KINDS=(union intersect grow-diag-final)
 
 

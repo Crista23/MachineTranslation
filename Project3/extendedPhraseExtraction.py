@@ -50,7 +50,8 @@ def extractPhrases(eLine, fLines, alLines, size, phraseTable):
     el = len(e)
     alignments = []
     for i in range(len(fLines)): #iterate over the foreign languages and create alignment matrices
-#        print fLines[i]
+        print "foreign line is: "
+        print fLines[i]
         fl = len(fLines[i])
         alignments.append(getAlignmentMatrix(alLines[i],el,fl))
     A = alignments[0]
@@ -119,6 +120,8 @@ def getAlignmentMatrix(alLine, el, fl):
 
     points = alLine.split()
     alignment = [[0 for col in range(el)] for row in range(fl)]
+    print "alignment"
+    print alignment
     for point in points:
 #	print "point is "+point
 #       It might be that f-pos and e-pos need to be swapped
@@ -126,7 +129,12 @@ def getAlignmentMatrix(alLine, el, fl):
         f_pos,e_pos = point.split("-")
 	f_pos = int(f_pos)
 	e_pos = int(e_pos)
-        alignment[f_pos][e_pos] = 1
+	print "f_pos: " + str(f_pos) + " and e_pos: " + str(e_pos)
+	print "fl:" + str(fl) + " and el: " + str(el)
+	#print "alignment"
+	#print alignment
+	if(f_pos < fl -1  and e_pos < el - 1):
+            alignment[f_pos][e_pos] = 1
     return alignment
 
 
