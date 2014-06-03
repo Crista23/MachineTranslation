@@ -87,7 +87,7 @@ def extractPhrases(eLine, fLines, alLines, size, phraseTable):
                                for j in range(e_s,e_e):
 #				   print 'read A[j][i]: ',i,j
                                    if A[i][j] != 0:
-                                      alignment += ' '+str(i)+'-'+str(j)
+                                      alignment += ' '+str(i - fs)+'-'+str(j - fe)
                            #write to the phrase table (append)
                            with open(phraseTable, "a+") as myfile:
 #                               print "Extracted a phrase pair"
@@ -129,12 +129,7 @@ def getAlignmentMatrix(alLine, el, fl):
         f_pos,e_pos = point.split("-")
 	f_pos = int(f_pos)
 	e_pos = int(e_pos)
-	print "f_pos: " + str(f_pos) + " and e_pos: " + str(e_pos)
-	print "fl:" + str(fl) + " and el: " + str(el)
-	#print "alignment"
-	#print alignment
-	if(f_pos < fl -1  and e_pos < el - 1):
-            alignment[f_pos][e_pos] = 1
+        alignment[f_pos][e_pos] = 1
     return alignment
 
 
