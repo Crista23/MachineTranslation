@@ -183,6 +183,23 @@ In Table \ref{bleuGrowDiagFinal}, \ref{bleuUnion}, \ref{bleuIntersect} inside th
  Just as in \cite{Johnson}, our results confirm that the quality of the translation remains unaffected when we filter with a 0.001, 0.1, 0.9 threshold the total number of phrase pairs. 
 
 
+\begin{table*}[t]
+\center
+\begin{tabular}{p{.3\linewidth} | c c c }
+&Size& Coverage & BLEU \\\hline\hline
+Baseline &1995778&&13.12	\\
+Johnson, threshold = 0.01&1380472&&13.12	\\\hline
+union		\\
+intersect	\\
+grow-diag-final	\\\hline
+Similar reference languages	\\
+Different reference languages 	\\
+All reference languages		\\\hline
+\end{tabular}
+
+\caption{Experimental results, focus language is French, target language is English. Size is the number of phrase pairs in the phrase table, Coverage the percentage of phrase pairs in a held-out phrase table in the corresponding training phrase table, BLEU the decoding performance.}
+\end{table*}
+
 
 
 
