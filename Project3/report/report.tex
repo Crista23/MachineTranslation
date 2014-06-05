@@ -52,10 +52,13 @@ The possibility that we aim to investigate in this project, is to use multi-para
 
 \section{Related work}
 
+%Johnson
+In \cite{Johnson} the bulk of phrase table is reduced based on the significance testing of phrase pair co-occurrence in the parallel corpus. The authors present two methods of testing the significance of associations in two by two contingency tables departing from calculating the probability that the observed table can occur by chance assuming a model of independence. For this purpose they use Chi-squared and Fisher exact test and experiment with different pruning threshold values ranging between 14 and 25. They outline that while the savings in terms of number of phrases discarded are considerable, the translation quality as measured by the BLEU score is preserved, and even more surprisingly it can even increase as compared to the case when all phrase pairs are kept. This makes their approach a valuable contribution to the field of machine translation.
+
+
 %Chen, Eisele and Kay 
-Two methods are presented in \cite{chen} to filter the phrase table for a language pair% which we will dubb \emph{source-target}
-, based on an intermediate third \emph{bridge} language. 
- Both methods assume an existing {\em source-target} phrase table, based on Giza++, and filter its entries with evidence from phrase tables {\em source-bridge} and {\em bridge-target}.
+In contrast to the approach described above, \cite{chen} does use triangulation to reduce the phrase tables.
+Two methods are presented to filter the phrase table for a language pair, based on an intermediate third \emph{bridge} language. Both methods assume an existing {\em source-target} phrase table, based on Giza++, and filter its entries with evidence from phrase tables {\em source-bridge} and {\em bridge-target}.
 
 In method 1, for each phrase pair $\langle s, t\rangle \in source-target$, it is kept if there is an entire phrase $b$ in the bridge language such that $\langle s,b\rangle \in source-bridge$ and also $\langle b,t\rangle \in bridge-target$.
 
@@ -64,44 +67,83 @@ Method 2 is somewhat more lenient, in that it looks at the words occurring in th
 % Cohn and Lapata
 The authors of \cite{cohn} focus less on reducing the phrase tables, but use triangulation to obtain high quality phrase tables from multilingual data, even if they are not from the same corpus. They use a summation over several intermediate languages to form a probability estimate: $p(s|t)=\sum_i p(s|i)p(i|t)$. Interestingly, the triangulated phrase table is trained separate from the standard phrase table, so that it can be used as a distinct feature in decoding.
 
-%Johnson
-In \cite{Johnson} the bulk of phrase table is reduced based on the significance testing of phrase pair co-occurence in the parallel corpus. The authors present two methods of testing the significance of associations in two by two contigency tables departing from calculating the probability that the observed table can occur by chance assuming a model of independence. For this purpose they use Chi-squared and Fisher exact test and experiment with different pruning threshold values ranging between 14 and 25. They outline that while the savings in terms of number of phrases discarded are considerable, the translation quality as measured by the BLEU score is preserved, and even more surprisingly it can even increase as compared to the case when all phrase pairs are kept. This makes their approach a valuable contribution to the field of machine translation.
-
 
 %\section{Goals}
 %In this project we are planning to build a phrase pair extraction tool for phrases of up to length 7 that would use evidence from multilingual aligned corpora. To achieve our goal we aim to use Europarl % cite EUroparl
 %data for Dutch, English, Romanian, French, German. % maybe add some more?
 %We are planning to investigate how we can use the evidence from word alignments between several languages to extract, rather than filter, phrase pairs and estimate their conditional and joint probabilities. For this, we consider the possibility to improve word alignment symmetrization from multilingual word alignments of the same target sentence.
 
+\section{Our approach}
+We use evidence from multiparallel data in the process of phrase extraction, rather than filter the phrase tables as described in \cite{chen}. We extended a simple phrase extraction algorithm with a sanity check on possible English windows. An (English) phrase, we imagine, is only a meaningful whole if it has a consistent translation in other languages. We therefore discard all English windows that do not have a consistent foreign window in any of the reference languages.
+
+\begin{figure*}[t]
+\includegraphics[width=\textwidth]{koehnExtractionAlgorithm}
+\caption{Phrase extraction algorithm, reproduced from \protect\cite{Koehn:2010}}
+\label{f:algorithm}
+\end{figure*}
+
+Although we changed some implementation details, our algorithm is essentially similar to the one described in \cite[page 133]{Koehn:2010}, as reproduced in figure \ref{f:algorithm}. Our extension adds a check after line 2, that the English window be consistent with some window in each reference foreign alignment.
 
 
-\section{Word-alignments}
-Phrase pair extraction is based on symmetrized word alignments. 
+
+\subsection{Multi-parallel data}
+
+The parallel data is sentence aligned, which means that each line in the source text corresponds to a line in the target text.
+In order for our phrase extraction to work, we want one single English (target) text file to be aligned to all languages.
+
+Our implementation is quite ad hoc, in that it compares the English sides and just discards those lines that are different. This means we discard part of the data, because in the original parallel data sometimes multiple sentences are concatenated in the sentence alignment. This approach could probably be refined to lose less data, but due to time constraints and memory efficiency reasons we preferred to keep only those lines that are common in all English files. 
+
+In what follows we describe our sentence alignment approach. From all the English files in the list of parallel data that we have for the 7 language pairs, we pick one randomly (we chose the English file from the English - Danish corpus in this case) and we retain only those sentences that are present in the other English files belonging to the other corpora. In this way we aim to identify common English sentences in all English files from the parallel corpora that we have. For each such sentence found we preserve the index of the occurrence so that we can retrieve its corresponding translations in the foreign languages we use. Usually these indices will denote the position of the corresponding translated sentence inside the foreign files. However, we are aware that this will not always be the case. For computation efficiency reasons, instead of looping though all the lines in a foreign file in searching for the translated version of the English sentence, we prefer to keep track of the last retrieved position $i_l$ from the English file and count the number of lines $n_s$ skipped since then to look up the corresponding foreign phrase within a window ranging between $i_l$ and $100 + i_l + n_s*2$. We chose to add 100 and multiply $n_s$ by 2 as a safe margin leaving from the premises that we should include in our search all the sentences located in the neighborhood of the expected index. 
+The output of our preprocessing algorithm consists in the English file having only the common sentences and the 7 foreign files for each of the different languages we use containing the corresponding versions of the English sentences which are now properly aligned with our English sentences. 
+
+\subsection{Word-alignments}
+ The consistency of a phrase pair is based on symmetrized Giza++ word alignments.
 
 The bidirectional word alignments are obtained with {\tt Giza++}, which is a combination of IBM-models. Although the quality of these alignments is not very high on itself, they have proven to be a useful guide in the extraction of phrase pairs. 
 
 %The symmetrization is done by Moses, which provides several heuristics to do so. We use the default setting for our baseline, i.e. grow-diag-final-and. 
 
- Because of the design of IBM models, the Giza word-alignments are one to many. For symmetrized word alignment, where many-to-many alignments are possible, Giza alignments for both directions are used and their alignment points combined. Each word-alignment can be viewed as a matrix with words in both languages along the axes, and binary values in the cells: either the words are aligned, or not. If we combine the two directions, we introduce new values for the cells: the alignment point is either present in both directions ($\mathcal B$), in the source-target alignment ($\mathcal S$), in the target-source alignment ($\mathcal T$), or in none (empty).
+ Because of the design of IBM models, the Giza word-alignments are one to many. For symmetrized word alignment, where many-to-many alignments are possible, Giza alignments for both directions are used and their alignment points combined. Each word-alignment can be viewed as a matrix with words in both languages along the axes, and binary values in the cells: either the words are aligned, or not. 
 
-The Moses alignment symmetrization is aimed to recast such a matrix back into a binary matrix. Union and intersection are the extreme choices, several  heuristics are available in Moses that compromise them:\begin{itemize}
-\item {\tt union} contains all non-empty cells. This heuristic has a high recall, but might have many false positives.
-\item  {\tt intersection} keeps only the $\mathcal B$ cells. These are the high-confidence points, thus improving precision but (generally) dropping recall.
+The Moses alignment symmetrization is aimed to recast two such matrices back into a single binary matrix. 
+Moses provides several heuristics for this step:\begin{itemize}
+\item {\tt union} contains alignment points from either matrix. This heuristic has a high recall, but might have many false positives.
+\item  {\tt intersection} keeps only the points that occur in both matrices. These are the high-confidence points, thus improving precision but (generally) dropping recall.
 \item {\tt grow} starts from the intersection and adds block-neighboring non-empty cells.
 \item {\tt grow-diag} is like {\tt grow}, but it also includes diagonally neighboring non-empty cells.
 \item {\tt final} is used after either heuristic, to add as many as possible unaligned words that are not neighbored.  %Don't fully understand how though. This intruduces the resumed-unterbrochene alignment in the example
 %\item {\tt grow-diag-final-and} is not explained in the Moses manual
 \end{itemize}
 
-In these heuristics, Moses does not distinguish between $\mathcal S$ and $\mathcal T$ cells. Since we use multi-parallel data that all translates to the same target (English), our extraction is not entirely symmetrical and this distinction might be of importance. 
+Since the symmetrized alignments are used for reducing the space of phrase pairs, having less alignment points, as in the intersection heuristic, is actually the more lenient choice for the phrase extraction step: you do not discard phrase pairs based on weak evidence. 
 
-Our base-line 
-
-The symmetrized alignments are used for reducing the space of phrase pairs. That means that having less alignment points, as in the intersection heuristic, is actually the more lenient choice for the phrase extraction step: you do not discard phrase pairs based on weak evidence. 
-
-
+The grow-diag-final is a nice midway between union and intersection, and indeed helps us reduce the phrase table without dropping phrase table quality. Our extension uses this heuristic for the symmetrized alignments of the focus language. However, we also use symmetrized alignments of the reference language sentences, to check the English window. We aim to investigate the effect of the symmetrization heuristic used for the reference languages on the size and quality of the resulting phrase table.
 
 \section{Experiments}
+We use French as the focus language in all or experiments, that is, we are translating from French to English. 
+
+As a baseline, we run Moses with the same alignments that we use for the focus language in our experiments. We also compare to the Johnson phrase table reduction that was implemented into Moses.
+
+In our first experiment, we investigate the effect of symmetrization heuristic for the reference languages. We run the extended phrase extraction algorithm with union, intersection, and grow-diag-final symmetrized word alignments. The reference languages used in these experiment are Italian and Dutch.
+
+ In our second experiment, we explore the effects of choosing certain languages as reference. As a reference, we use either languages that are very similar (Italian and Spanish) or very different (Danish and Dutch) from the focus language. We expect the latter set of languages to provide more useful evidence, as their word order will be more distinct and therefore more informative as to whether an English window is sensible.
+
+Furthermore, we conduct one experiment with just very many reference languages (Danish, Dutch, German, Italian, Portuguese, and Spanish). More languages means more evidence, so a further reduction of the phrase table. We try to investigate whether the quality is kept up. 
+
+
+\subsection{Methodology}
+
+We run Moses steps 1 and 2 with default setting on all language pairs to obtain the \textit{Giza} word alignments, taken from the intersection of bidirectional runs of \textit{Giza++} and some additional alignment points from the intersection of the two runs. For each language pair we create a special structure inside our experimental results directory, i.e. the \textit{corpus} and \textit{giza} folders generated by Moses as output of these first two steps include folders specific to each language pair. After the word alignments are generated, we conduct the symmetrization step of the alignments by experimenting in turn with the \textit{intersect}, \textit{union} and \textit{grow-diag-final} heuristics, which yield 3 different types of symmetrized alignments inside our \textit{model} folder. 
+
+For the baseline, we continue to train the SMT system with the symmetrized alignments, with the rest of the Moses steps from 4 to 9. Once the training is completed, we ask our system to translate from each foreign language that we include in our triangulation approach into English and score these translations by computing their corresponding \textit{BLEU} score. 
+% Why? We would just do grow-diag-final for a baseline, and only french to english? 
+%I moved the results to the results section
+
+For the Johnson reduction, we wanted to test how pruning the phrase table with different thresholds and keeping only those significant phrase pairs can influence in a positive or negative way our previously obtained results. In this respect we make use of the threshold-filter.perl script which we supply with values ranging between 0.001, 0.1, 0.9, \ldots. Increasing the threshold value is equivalent to dropping more phrase pairs that present less relevance. We feed the reduced phrase table back to Moses and train the SMT system starting with step 6 for scoring phrases. We ask Moses to translate our test set sentences and we score these translations using the BLEU metric.  We test according to the \textit{grow-diag-final} heuristic, the one which gave the best results so far.
+%I moved the results to the results section
+
+For our own experiments, we use the symmetrized alignments to extract phrases with our extended algorithm, with the different experimental settings described above. We evaluate by computing coverage as compared to held-out data, see below. We also use the best scoring phrase tables to decode the test data and compute BLEU scores.
+
 
 \subsection{Data}
 
@@ -110,45 +152,49 @@ We excluded Greek because of the following remark: ``Some recent Greek data has 
 
 We use a script that comes with the Moses installation for initial preprocessing. It discards empty lines and lines with sentences that exceed a length threshold. Furthermore, all text is lowercased.
 
-The Europarl recommends to set aside the Q4/2000 portion of the data for testing. However, the clean parallel corpora don't have time annotation, so there is no easy way to make this split. Therefore we decided to just create a split ourselves. Each $50^{th}$ sentence is removed from the corpus and added to a separate test file. The ratio is based on the fact that the Q4/2000 portion would be $\frac{3}{16*12-4}=0.016$ of the data.
+The Europarl recommends to set aside the Q4/2000 portion of the data for testing. However, the clean parallel corpora don't have time annotation, so there is no easy way to make this split. Therefore we decided to just create a split ourselves. Each $50^{th}$ sentence is removed from the corpus and added to a separate test file. The ratio is based on the fact that the Q4/2000 portion would be $\frac{3}{16*12-4}=0.016$ of the data. For the held-out/ training split, we use the same procedure.
 
 
-\paragraph{Sentence alignment}
-The parallel data is sentence aligned, which means that each line in the source text corresponds to a line in the target text.
-In order for our phrase extraction to work, we want one single English (target) text file to be aligned to all languages.
 
-Our implementation is quite ad hoc, in that it compares the English sides and just discards those lines that are different. This means we discard part of the data, because in the original parallel data sometimes multiple sentences are concatenated in the sentence alignment. This approach could probably be refined to lose less data, but due to time constraints and memory efficiency reasons we preferred to keep only those lines that are common in all English files. 
+\subsection{Evaluation}
+Since our algorithm is aimed at reducing the phrasetables, we compare the size of the phrase tables for all the experiments we conduct. Furthermore, we want to measure the quality of the phrase tables.
 
-In what follows we describe our sentence alignment approach. From all the English files in the list of parallel data that we have for the 7 language pairs, we pick one randomly (we chose the English file from the English - Danish corpus in this case) and we retain only those sentences that are present in the other English files belonging to the other corpora. In this way we aim to identify common English sentences in all English files from the parallel corpora that we have. For each such sentence found we preserve the index of the occurrence so that we can retrieve its corresponding translations in the foreign languages we use. Usually these indices will denote the position of the corresponding translated sentence inside the foreign files. However, we are aware that this will not always be the case. For computation efficiency reasons, instead of looping though all the lines in a foreign file in searching for the translated version of the English sentence, we prefer to keep track of the last retrieved position $i_l$ from the English file and count the number of lines $n_s$ skipped since then to look up the corresponding foreign phrase within a window ranging between $i_l$ and $100 + i_l + n_s*2$. We chose to add 100 and multiply $n_s$ by 2 as a safe margin leaving from the premises that we should include in our search all the sentences located in the neighborhood of the expected index. 
-The output of our preprocessing algorithm consists in the English file having only the common sentences and the 7 foreign files for each of the different languages we use containing the corresponding versions of the English sentences which are now properly aligned with our English sentences. After running our preprocessing script we managed to get a number of 73.872 such sentences inside each file.
-%I think our algorithm is still not very efficient, so I wouldn't mention time and memory gains explicitly
+The baseline and Johnson trained systems are used for decoding a test set. The BLEU scores are computed with the single reference translation form the Europarl data.
 
+Decoding and computing BLEU score are quite intensive, so we choose to not follow this procedure for all our experiments. Instead, we compute the coverage of the phrasetables with respect to a held-out set. We first train Giza++ on the entire training data, to obtain the Viterbi word alignments. Then we split both the corpus and corresponding symmetrized alignments into a train and held-out set. We extract a phrase table from both sets with identical experiment settings, and determine the percentage of phrase pairs in the held-out phrase table that occurs in the training phrase table. 
 
-\subsection{Baseline Methodology}
+Although a bit rough, we believe this is indicative of the usefulness of the phrase table for unseen data. The best scoring phrase tables from each experiment are then used for decoding to obtain a BLEU score that can be compared to the baseline and Johnson system. 
 
-For our baseline system, we run Moses steps 1 and 2 with default setting on all language pairs to obtain the \textit{Giza} word alignments, taken from the intersection of bidirectional runs of \textit{Giza++} and some additional alignment points from the intersection of the two runs. For each language pair we create a special structure inside our experimental results directory, i.e. the \textit{corpus} and \textit{giza} folders generated by Moses as output of these first two steps include folders specific to each language pair. After the word alignments are generated, we conduct the symmetrization step of the alignments by experimenting in turn with the \textit{intersect}, \textit{union} and \textit{grow-diag-final} heuristics, which yield 3 different types of symmetrized alignments inside our \textit{model} folder. Having the symmetrized alignments, we continue to train the SMT system with the rest of the Moses steps from 4 to 9. Once the training is completed, we ask our system to translate from each foreign language that we include in our triangulation approach into English and score these translations by computing their corresponding \textit{BLEU} score. In Table \ref{bleuGrowDiagFinal}, \ref{bleuUnion}, \ref{bleuIntersect} inside the Appendix we report our baseline results for each of the symmetrization heuristics previously mentioned. We observe that despite of the fact that the scores are lower than we expected them to be, possibly because of some alignment points out of range, the \textit{grow-diag-final} heuristic is constantly outputting the most accurate \textit{BLEU} scores.
-
-We further wanted to test how prunning the phrase table with different thresholds and keeping only those significant phrase pairs can influence in a positive or negative way our previously obtained results. In this respect we make use of the threshold-filter.perl script which we supply with values ranging between 0.001, 0.1, 0.9, \ldots. Increasing the threshold value is equivalent to dropping more phrase pairs that present less relevance. We feed the reduced phrase table back to Moses and train the SMT system starting with step 6 for scoring phrases. We ask Moses to translate our test set sentences and we score these translations using the BLEU metric.  We test according to the \textit{grow-diag-final} heuristic, the one which gave the best results so far. According to \cite{Johnson}, our results confirm that the quality of the translation remains unaffected when we filter with a 0.001, 0.1, 0.9 threshold the total number of phrase pairs. 
-
-\newpage
+%\newpage
 
 
 \section{Results}
-%Settings:
-% Pool of languages - large (7 languages), small-same (3 roman languages: French, Italian, Spanish), small-different (3 very different languages: Greek, Danish, Portoguese)
+
+After running our preprocessing script, to align the sentences form different language pairs, we managed to get a number of 73.872 sentences inside each file. 2\% of the data is set aside for testing.
+
+
+%Size of the phrase tables for different settings
+
+%Coverage
+
+%BLEU Scores = decoding performance
+In Table \ref{bleuGrowDiagFinal}, \ref{bleuUnion}, \ref{bleuIntersect} inside the Appendix we report our baseline results for each of the symmetrization heuristics previously mentioned. We observe that despite of the fact that the scores are lower than we expected them to be, possibly because of some alignment points out of range, the \textit{grow-diag-final} heuristic is constantly outputting the most accurate \textit{BLEU} scores.
+
+ Just as in \cite{Johnson}, our results confirm that the quality of the translation remains unaffected when we filter with a 0.001, 0.1, 0.9 threshold the total number of phrase pairs. 
+
+
+
+
 
 %Idea: only use pruned data for extraction - prevent sparsity
-
 %Relative size of the data after preprocessing
-%Size of the phrase tables for different settings
-%Decoding performance
 
 
 \section{Conclusion}
 
 % Future: apllicable for parallel data from different domains, so not language-parallel (is that possible?)
 A major drawback of our approach is the constraint that the multi-parallel corpus has to be aligned, so that the target-sides coincide. Apart from the possibility to improve the tool for extracting such data from a corpus like Europarl, it may be interesting to investigate the possibility to abandon this constraint at all. For instance, by using an existing (bilingually trained) system to provide translations for the English sentences in other languages. This would however severely aggravate the training of the model, so the question is whether the reduction in phrase table expected from our method is worth it.
-%We can say more about thit once we actually have results..
+%We can say more about this once we actually have results..
 
 
 \begin{thebibliography}{}
@@ -159,23 +205,29 @@ A major drawback of our approach is the constraint that the multi-parallel corpu
 \newblock{\em Phrase based models},
 \newblock Statistical Structure in Language Processing assignment
 
-\bibitem[2]{chen}
+\bibitem[2]{Johnson}
+{J Howard Johnson, Joel Martin, George Foster and Roland Kuhn},
+\newblock{2007}.
+\newblock{\em Improving Translation Quality by Discarding Most of the Phrasetable},
+\newblock {In Proceedings of EMNLP-CoNLL}
+
+\bibitem[3]{chen}
 {Yu Chen, Andreas Eisele, Martin Kay},
 \newblock{2008}.
 \newblock{\em Improving Statistical Machine Translation Efficiency by Triangulation},
 \newblock LREC
 
-\bibitem[3]{cohn}
+\bibitem[4]{cohn}
 {Trevor Cohn and Mirella Lapata},
 \newblock{2007}.
 \newblock{\em Machine translation by triangulation: Making effective use of multi-parallel corpora},
 \newblock {ANNUAL MEETING-ASSOCIATION FOR COMPUTATIONAL LINGUISTICS}
 
-\bibitem[4]{Johnson}
-{J Howard Johnson, Joel Martin, George Foster and Roland Kuhn},
-\newblock{2007}.
-\newblock{\em Improving Translation Quality by Discarding Most of the Phrasetable},
-\newblock {In Proceedings of EMNLP-CoNLL}
+\bibitem[5]{Koehn:2010}
+Philipp Koehn,
+\newblock 2010.
+\newblock {\em Statistical Machine Translation}.
+\newblock Cambridge University Press.
 
 %%\bibitem[\protect\citename{Gusfield}1997]{Gusfield:97}
 %%Dan Gusfield.
