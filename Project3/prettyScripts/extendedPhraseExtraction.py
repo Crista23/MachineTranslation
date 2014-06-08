@@ -1,17 +1,13 @@
 import sys, glob
 
+#called from extractPhraseTables.sh script
 def main():
     size = 7
     eline = sys.argv[1].strip().split()
-#    print "eline is "+str(eline)
     flines = sys.argv[2].strip().split('@@')
-#    print "flines is "+str(flines)
     flines = [fline.split() for fline in flines]
     allines = sys.argv[3].strip().split(',')
-#    print "allines is "+str(allines)
     output = sys.argv[4]
-#    print "output is "+output
-#    print "Going to extract phrases"
     extractPhrases(eline, flines, allines, size, output)
 
 

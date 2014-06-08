@@ -12,21 +12,15 @@ KNOWN=0
 UNKNOWN=0
 while read LINEPHTABLE1
 do
-	echo "before delete"
     echo "$LINEPHTABLE1"
-	echo "after delete"
-	#echo "$LINEPHTABLE1" | sed -e 's/|||.*//g'
 	NEWLINE=${LINEPHTABLE1% ||| *}
-	#echo "$LINEPHTABLE1"
 	echo "$NEWLINE"
 	if grep -q "$NEWLINE" SORTEDPHRASETABLEUNIONMIX2; then
 		echo "found"
-		#$KNOWN=$(($KNOWN+1))
 		(( KNOWN++ ))
 		echo "$KNOWN"
 	else
 		echo "not found"
-		#$UNKNOWN=$(($UNKNOWN+1))
 		(( UNKNOWN++ ))
 		echo "$UNKNOWN"
 	fi
