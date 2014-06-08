@@ -170,7 +170,12 @@ Although a bit rough, we believe this is indicative of the usefulness of the phr
 
 \section{Results}
 
-After running our preprocessing script, to align the sentences form different language pairs, we managed to get a number of 73.872 sentences inside each file. 2\% of the data is set aside for testing.
+We encountered some problems in the preprocessing, because the Europarl corpus showed some gaps: not all the parliament proceedings were in all the files. We manually identified and removed those parts. After running our preprocessing script, to align the sentences form different language pairs, we managed to get a number of 73.872 sentences inside each file. 2\% of the data is set aside for testing.
+
+Our results are displayed in table \ref{t:allResults}. Due to unsolved problems in our own code, we have not been able to produce our reduced phrasetables.
+ We can therefore only report on the baseline setting, and the Johnson pruned phrasetables.
+ Just as in \cite{Johnson}, our results confirm that the quality of the translation remains unaffected when we filter with a 0.001 and 0.01 threshold the baseline phrasetable, although the size is greatly reduced.
+
 
 
 %Size of the phrase tables for different settings
@@ -178,17 +183,35 @@ After running our preprocessing script, to align the sentences form different la
 %Coverage
 
 %BLEU Scores = decoding performance
-In Table \ref{bleuGrowDiagFinal}, \ref{bleuUnion}, \ref{bleuIntersect} inside the Appendix we report our baseline results for each of the symmetrization heuristics previously mentioned. We observe that despite of the fact that the scores are lower than we expected them to be, possibly because of some alignment points out of range, the \textit{grow-diag-final} heuristic is constantly outputting the most accurate \textit{BLEU} scores.
 
- Just as in \cite{Johnson}, our results confirm that the quality of the translation remains unaffected when we filter with a 0.001, 0.1, 0.9 threshold the total number of phrase pairs. 
+%We could add this table, if you want to report on the details of the BLEU score
+%\begin{table}
+%\center
+%    \begin{tabular}{ | l | l |}
+%    \hline
+%    \textbf{Language} & \textbf{BLEU} \\ 
+%    \textit{French} & \textit{Score}: 13.12 \\
+%    & 1-gram precision: 43.4 \\
+%    & 2-gram precision: 19.4 \\
+%    & 3-gram precision: 11.1 \\
+%    & 4-gram precision: 7.0 \\
+%    & BP$=$0,820 \\
+%    & ratio$=$0,834 \\
+%    & hyp$\_$len$=$27.137 \\
+%    & ref$\_$len$=$32.526\\
+%    \end{tabular}
+%\end{table}
 
 
 \begin{table*}[t]
 \center
-\begin{tabular}{p{.3\linewidth} | c c c }
+\begin{tabular}{p{.3\linewidth} | r r r }
 &Size& Coverage & BLEU \\\hline\hline
-Baseline &1995778&&13.12	\\
-Johnson, threshold = 0.01&1380472&&13.12	\\\hline
+Baseline &1995778&&13.12	\\\hline
+Johnson, threshold = 0.001&1380472&&13.12	\\
+Johnson, threshold = 0.01&615306&&13.12	\\
+%Johnson, threshold = 0.09&&&13.12	\\
+\hline
 union		\\
 intersect	\\
 grow-diag-final	\\\hline
@@ -198,6 +221,7 @@ All reference languages		\\\hline
 \end{tabular}
 
 \caption{Experimental results, focus language is French, target language is English. Size is the number of phrase pairs in the phrase table, Coverage the percentage of phrase pairs in a held-out phrase table in the corresponding training phrase table, BLEU the decoding performance.}
+\label{t:allResults}
 \end{table*}
 
 
@@ -208,9 +232,13 @@ All reference languages		\\\hline
 
 
 \section{Conclusion}
+Onfortunately, we have not been able to come up with experimental results that confirm or counter our approach. We can therefore only make some general remarks about our method.
+
 
 % Future: apllicable for parallel data from different domains, so not language-parallel (is that possible?)
-A major drawback of our approach is the constraint that the multi-parallel corpus has to be aligned, so that the target-sides coincide. Apart from the possibility to improve the tool for extracting such data from a corpus like Europarl, it may be interesting to investigate the possibility to abandon this constraint at all. For instance, by using an existing (bilingually trained) system to provide translations for the English sentences in other languages. This would however severely aggravate the training of the model, so the question is whether the reduction in phrase table expected from our method is worth it.
+A major drawback of our approach is the constraint that the multi-parallel corpus has to be aligned, so that the target-sides coincide. This appeared to be nontrivial, partly because the data for the language pairs differed more than we expected. This preprocessing was also computationally quite heavy. However, the resulting data is general enough to be used in all sorts of approaches.
+
+Apart from the possibility to improve the tool for extracting this typical kind of data from a corpus like Europarl, it may be interesting to investigate the possibility to abandon this constraint at all. For instance, by using an existing (bilingually trained) system to provide translations for the English sentences in other languages. This would however severely aggravate the training of the model, so the question is whether the reduction in phrase table expected from our method is worth it.
 %We can say more about this once we actually have results..
 
 
@@ -312,251 +340,251 @@ Philipp Koehn,
 
 \end{thebibliography}
 
-\newpage
-\appendix
-\section{Appendix}
-
-\begin{itemize}
-
-\item \textbf{Alignment type: grow-diag-final}
-\begin{center}
-    \begin{tabular}{ | l | l |}
-    \hline
-    \textbf{Language} & \textbf{BLEU} \\ 
-    \hline
-    \textit{Danish} & \textit{Score}: 1.56 \\
-    & 1-gram precision: 18.1 \\
-    & 2-gram precision: 2.5 \\
-    & 3-gram precision: 0,7 \\
-    & 4-gram precision: 0,4 \\
-    & BP$=$0.813 \\
-    & ratio$=$0.829 \\
-    & hyp$\_$len$=$26.953 \\
-    & ref$\_$len$=$32.526\\
-    \hline
-    \textit{Deutsch} & \textit{Score}: 0? \\
-    \hline
-    \textit{Spanish} & \textit{Score}: 13.51 \\
-    & 1-gram precision: 44.4 \\
-    & 2-gram precision: 20.2 \\
-    & 3-gram precision: 12.2 \\
-    & 4-gram precision: 8.0 \\
-    & BP$=$0,786 \\
-    & ratio$=$0,806 \\
-    & hyp$\_$len$=$26.215 \\
-    & ref$\_$len$=$32.526\\
-    \hline
-    \textit{French} & \textit{Score}: 13.12 \\
-    & 1-gram precision: 43.4 \\
-    & 2-gram precision: 19.4 \\
-    & 3-gram precision: 11.1 \\
-    & 4-gram precision: 7.0 \\
-    & BP$=$0,820 \\
-    & ratio$=$0,834 \\
-    & hyp$\_$len$=$27.137 \\
-    & ref$\_$len$=$32.526\\
-    \hline % split table here
-    \textit{Italian} & \textit{Score}: 12.77 \\
-    & 1-gram precision: 41.8 \\
-    & 2-gram precision: 18.7 \\
-    & 3-gram precision: 11.5 \\
-    & 4-gram precision: 7.8 \\
-    & BP$=$0,787 \\
-    & ratio$=$0,807 \\
-    & hyp$\_$len$=$22.236 \\
-    & ref$\_$len$=$32.526\\
-    \hline
-    \textit{Dutch} & \textit{Score}: 10.95 \\
-    & 1-gram precision: 39.5 \\
-    & 2-gram precision: 16.3 \\
-    & 3-gram precision: 9.0 \\
-    & 4-gram precision: 5.7 \\
-    & BP$=$0,813 \\
-    & ratio$=$0,829 \\
-    & hyp$\_$len$=$26.955 \\
-    & ref$\_$len$=$32.526\\
-    \hline
-    \end{tabular}
-    
-    \begin{table}
-    \begin{tabular}{ | l | l |}
-    \hline
-    \textbf{Language} & \textbf{BLEU} \\ 
-    \hline
-    \textit{Portugese} & \textit{Score}: 13.25 \\
-    & 1-gram precision: 42.9 \\
-    & 2-gram precision: 19.5 \\
-    & 3-gram precision: 11.6 \\
-    & 4-gram precision: 7.7 \\
-    & BP$=$0,802 \\
-    & ratio$=$0,819 \\
-    & hyp$\_$len$=$26.644 \\
-    & ref$\_$len$=$32.526\\
-    \hline
-    \end{tabular}
-    \caption{BLEU evaluation results for the \textit{grow-diag-final} alignment, where the following abbreviations stand for: BP (Brevity Penalty) $=$ min(1, number of output words $/$ number of reference words), ratio $=$ number of output words $/$ number of reference words, hyp\_len $=$ number of output words, ref\_len $=$ number of reference words }
-    \label{bleuGrowDiagFinal}
-    \end{table}
-\end{center}
-
-\newpage
-\item \textbf{Alignment type: union}
-
-\begin{center}
-    \begin{tabular}{ | l | l |}
-    \hline
-    \textbf{Language} & \textbf{BLEU} \\ 
-    \hline
-    \textit{Danish} & \textit{Score}: 1.43 \\
-    & 1-gram precision: 16.3 \\
-    & 2-gram precision: 2.0 \\
-    & 3-gram precision: 0,6 \\
-    & 4-gram precision: 0,4 \\
-    & BP$=$0.830 \\
-    & ratio$=$0.843 \\
-    & hyp$\_$len$=$27.431 \\
-    & ref$\_$len$=$32.526\\
-    \hline
-    \textit{Deutsch} & \textit{Score}: 0? \\
-    \hline
-    \textit{Spanish} & \textit{Score}: 13.03 \\
-    & 1-gram precision: 43.0 \\
-    & 2-gram precision: 18.9 \\
-    & 3-gram precision: 11.0 \\
-    & 4-gram precision: 7.2 \\
-    & BP$=$0,817 \\
-    & ratio$=$0,832 \\
-    & hyp$\_$len$=$27.055 \\
-    & ref$\_$len$=$32.526\\
-    \hline
-    \textit{French} & \textit{Score}: 12.69 \\
-    & 1-gram precision: 42.2 \\
-    & 2-gram precision: 18.3 \\
-    & 3-gram precision: 10.2 \\
-    & 4-gram precision: 6.4 \\
-    & BP$=$0,846 \\
-    & ratio$=$0,857 \\
-    & hyp$\_$len$=$27.869 \\
-    & ref$\_$len$=$32.526\\
-    \hline % split table here
-    \end{tabular}
-    
-    \begin{table}
-    \begin{tabular}{ | l | l |}
-    \hline
-    \textbf{Language} & \textbf{BLEU} \\ 
-    \hline
-    \textit{Italian} & \textit{Score}: 11.60 \\
-    & 1-gram precision: 40.0 \\
-    & 2-gram precision: 16.6 \\
-    & 3-gram precision: 9.7 \\
-    & 4-gram precision: 6.4 \\
-    & BP$=$0,813 \\
-    & ratio$=$0,829 \\
-    & hyp$\_$len$=$26.960 \\
-    & ref$\_$len$=$32.526\\
-    \hline
-    \textit{Dutch} & \textit{Score}: 10.46 \\
-    & 1-gram precision: 38.2 \\
-    & 2-gram precision: 15.2 \\
-    & 3-gram precision: 8.2 \\
-    & 4-gram precision: 5.1 \\
-    & BP$=$0,840 \\
-    & ratio$=$0,851 \\
-    & hyp$\_$len$=$27.693 \\
-    & ref$\_$len$=$32.526\\
-    \hline
-    \textit{Portugese} & \textit{Score}: 12.10 \\
-    & 1-gram precision: 41.0 \\
-    & 2-gram precision: 17.4 \\
-    & 3-gram precision: 10.0 \\
-    & 4-gram precision: 6.4 \\
-    & BP$=$0,826 \\
-    & ratio$=$0,840 \\
-    & hyp$\_$len$=$27.318 \\
-    & ref$\_$len$=$32.526\\
-    \hline
-    \end{tabular}
-    \caption{BLEU evaluation results for the \textit{union} alignment, where the following abbreviations stand for: BP (Brevity Penalty) $=$ min(1, number of output words $/$ number of reference words), ratio $=$ number of output words $/$ number of reference words, hyp\_len $=$ number of output words, ref\_len $=$ number of reference words }
-    \label{bleuUnion}
-    \end{table}
-\end{center}
-
-\newpage
-\item \textbf{Alignment type: intersect}
-
-\begin{center}
-    \begin{tabular}{ | l | l |}
-    \hline
-    \textbf{Language} & \textbf{BLEU} \\ 
-    \hline
-    \textit{Danish} & \textit{Score}: 0.86 \\
-    & 1-gram precision: 23.4 \\
-    & 2-gram precision: 3.6 \\
-    & 3-gram precision: 0,9 \\
-    & 4-gram precision: 0,3 \\
-    & BP$=$0.403 \\
-    & ratio$=$0.524 \\
-    & hyp$\_$len$=$17.033 \\
-    & ref$\_$len$=$32.526\\
-    \hline
-    \textit{Deutsch} & \textit{Score}: 0? \\
-    \hline
-    \textit{Spanish} & \textit{Score}: 9.78 \\
-    & 1-gram precision: 49.7 \\
-    & 2-gram precision: 23.5 \\
-    & 3-gram precision: 14.4 \\
-    & 4-gram precision: 9.5 \\
-    & BP$=$0,489 \\
-    & ratio$=$0,583 \\
-    & hyp$\_$len$=$18.971 \\
-    & ref$\_$len$=$32.526\\
-    \hline
-    \textit{French} & \textit{Score}: 10.24 \\
-    & 1-gram precision: 49.8 \\
-    & 2-gram precision: 23.4 \\
-    & 3-gram precision: 14.5 \\
-    & 4-gram precision: 9.7 \\
-    & BP$=$0,508 \\
-    & ratio$=$0,596 \\
-    & hyp$\_$len$=$19.401 \\
-    & ref$\_$len$=$32.526\\
-    \hline % split table here
-    \textit{Italian} & \textit{Score}: 0 ? \\
-    \hline
-    \textit{Dutch} & \textit{Score}: 8.20 \\
-    & 1-gram precision: 46.1 \\
-    & 2-gram precision: 20.1 \\
-    & 3-gram precision: 12.0 \\
-    & 4-gram precision: 8.0 \\
-    & BP$=$0,475 \\
-    & ratio$=$0,573 \\
-    & hyp$\_$len$=$18.637 \\
-    & ref$\_$len$=$32.526\\
-    \hline
-    \end{tabular}
-    
-    \begin{table}
-    \begin{tabular}{ | l | l |}
-    \hline
-    \textbf{Language} & \textbf{BLEU} \\ 
-    \hline    
-    \textit{Portugese} & \textit{Score}: 8.75 \\
-    & 1-gram precision: 48.0 \\
-    & 2-gram precision: 21.7 \\
-    & 3-gram precision: 13.2 \\
-    & 4-gram precision: 8.8 \\
-    & BP$=$0,469 \\
-    & ratio$=$0,569 \\
-    & hyp$\_$len$=$18.511 \\
-    & ref$\_$len$=$32.526\\
-    \hline
-    \end{tabular}
-    \caption{BLEU evaluation results for the \textit{intersect} alignment, where the following abbreviations stand for: BP (Brevity Penalty) $=$ min(1, number of output words $/$ number of reference words), ratio $=$ number of output words $/$ number of reference words, hyp\_len $=$ number of output words, ref\_len $=$ number of reference words }
-    \label{bleuIntersect}
-    \end{table}
-\end{center}
-
-\end{itemize}
+%\newpage
+%\appendix
+%\section{Appendix}
+%
+%\begin{itemize}
+%
+%\item \textbf{Alignment type: grow-diag-final}
+%\begin{center}
+%    \begin{tabular}{ | l | l |}
+%    \hline
+%    \textbf{Language} & \textbf{BLEU} \\ 
+%    \hline
+%    \textit{Danish} & \textit{Score}: 1.56 \\
+%    & 1-gram precision: 18.1 \\
+%    & 2-gram precision: 2.5 \\
+%    & 3-gram precision: 0,7 \\
+%    & 4-gram precision: 0,4 \\
+%    & BP$=$0.813 \\
+%    & ratio$=$0.829 \\
+%    & hyp$\_$len$=$26.953 \\
+%    & ref$\_$len$=$32.526\\
+%    \hline
+%    \textit{Deutsch} & \textit{Score}: 0? \\
+%    \hline
+%    \textit{Spanish} & \textit{Score}: 13.51 \\
+%    & 1-gram precision: 44.4 \\
+%    & 2-gram precision: 20.2 \\
+%    & 3-gram precision: 12.2 \\
+%    & 4-gram precision: 8.0 \\
+%    & BP$=$0,786 \\
+%    & ratio$=$0,806 \\
+%    & hyp$\_$len$=$26.215 \\
+%    & ref$\_$len$=$32.526\\
+%    \hline
+%    \textit{French} & \textit{Score}: 13.12 \\
+%    & 1-gram precision: 43.4 \\
+%    & 2-gram precision: 19.4 \\
+%    & 3-gram precision: 11.1 \\
+%    & 4-gram precision: 7.0 \\
+%    & BP$=$0,820 \\
+%    & ratio$=$0,834 \\
+%    & hyp$\_$len$=$27.137 \\
+%    & ref$\_$len$=$32.526\\
+%    \hline % split table here
+%    \textit{Italian} & \textit{Score}: 12.77 \\
+%    & 1-gram precision: 41.8 \\
+%    & 2-gram precision: 18.7 \\
+%    & 3-gram precision: 11.5 \\
+%    & 4-gram precision: 7.8 \\
+%    & BP$=$0,787 \\
+%    & ratio$=$0,807 \\
+%    & hyp$\_$len$=$22.236 \\
+%    & ref$\_$len$=$32.526\\
+%    \hline
+%    \textit{Dutch} & \textit{Score}: 10.95 \\
+%    & 1-gram precision: 39.5 \\
+%    & 2-gram precision: 16.3 \\
+%    & 3-gram precision: 9.0 \\
+%    & 4-gram precision: 5.7 \\
+%    & BP$=$0,813 \\
+%    & ratio$=$0,829 \\
+%    & hyp$\_$len$=$26.955 \\
+%    & ref$\_$len$=$32.526\\
+%    \hline
+%    \end{tabular}
+%    
+%    \begin{table}
+%    \begin{tabular}{ | l | l |}
+%    \hline
+%    \textbf{Language} & \textbf{BLEU} \\ 
+%    \hline
+%    \textit{Portugese} & \textit{Score}: 13.25 \\
+%    & 1-gram precision: 42.9 \\
+%    & 2-gram precision: 19.5 \\
+%    & 3-gram precision: 11.6 \\
+%    & 4-gram precision: 7.7 \\
+%    & BP$=$0,802 \\
+%    & ratio$=$0,819 \\
+%    & hyp$\_$len$=$26.644 \\
+%    & ref$\_$len$=$32.526\\
+%    \hline
+%    \end{tabular}
+%    \caption{BLEU evaluation results for the \textit{grow-diag-final} alignment, where the following abbreviations stand for: BP (Brevity Penalty) $=$ min(1, number of output words $/$ number of reference words), ratio $=$ number of output words $/$ number of reference words, hyp\_len $=$ number of output words, ref\_len $=$ number of reference words }
+%    \label{bleuGrowDiagFinal}
+%    \end{table}
+%\end{center}
+%
+%\newpage
+%\item \textbf{Alignment type: union}
+%
+%\begin{center}
+%    \begin{tabular}{ | l | l |}
+%    \hline
+%    \textbf{Language} & \textbf{BLEU} \\ 
+%    \hline
+%    \textit{Danish} & \textit{Score}: 1.43 \\
+%    & 1-gram precision: 16.3 \\
+%    & 2-gram precision: 2.0 \\
+%    & 3-gram precision: 0,6 \\
+%    & 4-gram precision: 0,4 \\
+%    & BP$=$0.830 \\
+%    & ratio$=$0.843 \\
+%    & hyp$\_$len$=$27.431 \\
+%    & ref$\_$len$=$32.526\\
+%    \hline
+%    \textit{Deutsch} & \textit{Score}: 0? \\
+%    \hline
+%    \textit{Spanish} & \textit{Score}: 13.03 \\
+%    & 1-gram precision: 43.0 \\
+%    & 2-gram precision: 18.9 \\
+%    & 3-gram precision: 11.0 \\
+%    & 4-gram precision: 7.2 \\
+%    & BP$=$0,817 \\
+%    & ratio$=$0,832 \\
+%    & hyp$\_$len$=$27.055 \\
+%    & ref$\_$len$=$32.526\\
+%    \hline
+%    \textit{French} & \textit{Score}: 12.69 \\
+%    & 1-gram precision: 42.2 \\
+%    & 2-gram precision: 18.3 \\
+%    & 3-gram precision: 10.2 \\
+%    & 4-gram precision: 6.4 \\
+%    & BP$=$0,846 \\
+%    & ratio$=$0,857 \\
+%    & hyp$\_$len$=$27.869 \\
+%    & ref$\_$len$=$32.526\\
+%    \hline % split table here
+%    \end{tabular}
+%    
+%    \begin{table}
+%    \begin{tabular}{ | l | l |}
+%    \hline
+%    \textbf{Language} & \textbf{BLEU} \\ 
+%    \hline
+%    \textit{Italian} & \textit{Score}: 11.60 \\
+%    & 1-gram precision: 40.0 \\
+%    & 2-gram precision: 16.6 \\
+%    & 3-gram precision: 9.7 \\
+%    & 4-gram precision: 6.4 \\
+%    & BP$=$0,813 \\
+%    & ratio$=$0,829 \\
+%    & hyp$\_$len$=$26.960 \\
+%    & ref$\_$len$=$32.526\\
+%    \hline
+%    \textit{Dutch} & \textit{Score}: 10.46 \\
+%    & 1-gram precision: 38.2 \\
+%    & 2-gram precision: 15.2 \\
+%    & 3-gram precision: 8.2 \\
+%    & 4-gram precision: 5.1 \\
+%    & BP$=$0,840 \\
+%    & ratio$=$0,851 \\
+%    & hyp$\_$len$=$27.693 \\
+%    & ref$\_$len$=$32.526\\
+%    \hline
+%    \textit{Portugese} & \textit{Score}: 12.10 \\
+%    & 1-gram precision: 41.0 \\
+%    & 2-gram precision: 17.4 \\
+%    & 3-gram precision: 10.0 \\
+%    & 4-gram precision: 6.4 \\
+%    & BP$=$0,826 \\
+%    & ratio$=$0,840 \\
+%    & hyp$\_$len$=$27.318 \\
+%    & ref$\_$len$=$32.526\\
+%    \hline
+%    \end{tabular}
+%    \caption{BLEU evaluation results for the \textit{union} alignment, where the following abbreviations stand for: BP (Brevity Penalty) $=$ min(1, number of output words $/$ number of reference words), ratio $=$ number of output words $/$ number of reference words, hyp\_len $=$ number of output words, ref\_len $=$ number of reference words }
+%    \label{bleuUnion}
+%    \end{table}
+%\end{center}
+%
+%\newpage
+%\item \textbf{Alignment type: intersect}
+%
+%\begin{center}
+%    \begin{tabular}{ | l | l |}
+%    \hline
+%    \textbf{Language} & \textbf{BLEU} \\ 
+%    \hline
+%    \textit{Danish} & \textit{Score}: 0.86 \\
+%    & 1-gram precision: 23.4 \\
+%    & 2-gram precision: 3.6 \\
+%    & 3-gram precision: 0,9 \\
+%    & 4-gram precision: 0,3 \\
+%    & BP$=$0.403 \\
+%    & ratio$=$0.524 \\
+%    & hyp$\_$len$=$17.033 \\
+%    & ref$\_$len$=$32.526\\
+%    \hline
+%    \textit{Deutsch} & \textit{Score}: 0? \\
+%    \hline
+%    \textit{Spanish} & \textit{Score}: 9.78 \\
+%    & 1-gram precision: 49.7 \\
+%    & 2-gram precision: 23.5 \\
+%    & 3-gram precision: 14.4 \\
+%    & 4-gram precision: 9.5 \\
+%    & BP$=$0,489 \\
+%    & ratio$=$0,583 \\
+%    & hyp$\_$len$=$18.971 \\
+%    & ref$\_$len$=$32.526\\
+%    \hline
+%    \textit{French} & \textit{Score}: 10.24 \\
+%    & 1-gram precision: 49.8 \\
+%    & 2-gram precision: 23.4 \\
+%    & 3-gram precision: 14.5 \\
+%    & 4-gram precision: 9.7 \\
+%    & BP$=$0,508 \\
+%    & ratio$=$0,596 \\
+%    & hyp$\_$len$=$19.401 \\
+%    & ref$\_$len$=$32.526\\
+%    \hline % split table here
+%    \textit{Italian} & \textit{Score}: 0 ? \\
+%    \hline
+%    \textit{Dutch} & \textit{Score}: 8.20 \\
+%    & 1-gram precision: 46.1 \\
+%    & 2-gram precision: 20.1 \\
+%    & 3-gram precision: 12.0 \\
+%    & 4-gram precision: 8.0 \\
+%    & BP$=$0,475 \\
+%    & ratio$=$0,573 \\
+%    & hyp$\_$len$=$18.637 \\
+%    & ref$\_$len$=$32.526\\
+%    \hline
+%    \end{tabular}
+%    
+%    \begin{table}
+%    \begin{tabular}{ | l | l |}
+%    \hline
+%    \textbf{Language} & \textbf{BLEU} \\ 
+%    \hline    
+%    \textit{Portugese} & \textit{Score}: 8.75 \\
+%    & 1-gram precision: 48.0 \\
+%    & 2-gram precision: 21.7 \\
+%    & 3-gram precision: 13.2 \\
+%    & 4-gram precision: 8.8 \\
+%    & BP$=$0,469 \\
+%    & ratio$=$0,569 \\
+%    & hyp$\_$len$=$18.511 \\
+%    & ref$\_$len$=$32.526\\
+%    \hline
+%    \end{tabular}
+%    \caption{BLEU evaluation results for the \textit{intersect} alignment, where the following abbreviations stand for: BP (Brevity Penalty) $=$ min(1, number of output words $/$ number of reference words), ratio $=$ number of output words $/$ number of reference words, hyp\_len $=$ number of output words, ref\_len $=$ number of reference words }
+%    \label{bleuIntersect}
+%    \end{table}
+%\end{center}
+%
+%\end{itemize}
 
 \end{document}
