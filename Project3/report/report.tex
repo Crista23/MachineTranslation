@@ -20,13 +20,13 @@
 \renewcommand{\vec}[1]{\mathbf{#1}}
 
 \title{Statistical Structure in Language Processing \\Using multi-parallel data for phrase-table improvement}
-\author{ Cristina G\^arbacea\\
-  10407936 \\
-  {\small \tt cr1st1na.garbacea@gmail.com} 
+\author{ Sara Veldhoen \\
+  10545298 \\
+  {\small \tt sara.veldhoen@student.uva.nl} 
   \\\And
-  Sara Veldhoen \\
-10545298   \\
-  {\small \tt sara.veldhoen@student.uva.nl} \\}
+  Cristina G\^arbacea\\
+  10407936 \\
+  {\small \tt cr1st1na.garbacea@gmail.com} \\}
 
 \date{}
 
@@ -35,9 +35,9 @@
 \maketitle
 
 \begin{abstract}
-In this paper we continue to extend upon our previous assignment by building a phrase pair extraction tool that would use evidence from aligned parallel corpora. Unlike in our previous work where we would only use parallel corpora consisting of two languages, this time we use evidence from multilingual parallel aligned corpora made available by Europarl. We investigate how word alignments between several languages can be of use in extracting consistent phrase pairs. %along with their conditional and joint probabilities 
+In this paper we continue to extend upon our previous assignment by building a phrase pair extraction tool that would use evidence from aligned parallel corpora. Unlike in our previous work where we would only use parallel corpora consisting of two languages, this time we use evidence from multilingual parallel aligned corpora made available by Europarl \cite{EuroparlUrl}. We investigate how word alignments between several languages can be of use in extracting consistent phrase pairs. %along with their conditional and joint probabilities 
 %and consider how word alignment symmetrization can be improved from multilingual word alignments of the same target sentence. 
-We present an algorithm to do so, and experimented with different symmetrization heuristics to be used as an input. Furthermore, we investigated how the choice of reference languages influences improvement. We compare our results to a baseline system, and to a different approach to phrase table filtering, based on significance testing.
+We present an algorithm to do so, and experiment with different symmetrization heuristics to be used as an input. Furthermore, we investigated how the choice of reference languages influences improvement. We compare our results to a baseline system, and to a different approach to phrase table filtering, based on significance testing.
 \end{abstract}
 
 \section{Introduction}
@@ -273,6 +273,18 @@ Philipp Koehn,
 \newblock 2010.
 \newblock {\em Statistical Machine Translation}.
 \newblock Cambridge University Press.
+
+\bibitem[6]{Europarl}
+Philipp Koehn,
+\newblock 2005.
+\newblock {\em Europarl: A parallel corpus for Statistical Machine Translation}.
+\newblock Machine Translation Summit. Vol. 5.
+
+\bibitem[7]{EuroparlUrl}
+\newblock EUROPARL.
+\newblock {\em European Parliament Proceedings Parallel Corpus}.
+\newblock 1996-2011.
+\newblock {URL: \url{http://www.statmt.org/europarl/}}
 
 %%\bibitem[\protect\citename{Gusfield}1997]{Gusfield:97}
 %%Dan Gusfield.
